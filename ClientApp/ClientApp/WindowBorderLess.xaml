@@ -6,7 +6,7 @@
         Style="{DynamicResource MainWindowStyle}">
 	<Grid>
 		<Label Content="Reverse Vending Machine - Derpton Middle School" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-35,0,0" Foreground="#FFBBBBBB" FontSize="21.333"/>
-		<Grid HorizontalAlignment="Left" Height="576.666" Margin="-6,0.334,0,0" VerticalAlignment="Center" Width="260" Background="#FFB2B2B2">
+		<Grid HorizontalAlignment="Left" Height="576.666" Margin="-6,0.334,0,0" VerticalAlignment="Center" Width="266" Background="#FFB2B2B2">
 			<Viewbox HorizontalAlignment="Left" Height="40" Margin="65,15,0,0" VerticalAlignment="Top" Width="185" StretchDirection="UpOnly">
 				<TextBlock x:Name="ItemName" HorizontalAlignment="Center" TextWrapping="Wrap" Text="No item selected" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI">
 					<TextBlock.RenderTransform>
@@ -19,11 +19,45 @@
 					</TextBlock.RenderTransform>
 				</TextBlock>
 			</Viewbox>
-			<Grid x:Name="Icon" HorizontalAlignment="Left" Height="53" Margin="10,10,0,0" VerticalAlignment="Top" Width="50">
+			<Grid x:Name="Icon" HorizontalAlignment="Left" Height="50" Margin="10,10,0,0" VerticalAlignment="Top" Width="50">
 				<Ellipse Fill="#FF2ECC71" HorizontalAlignment="Left" Height="50" Stroke="#FF2ECC71" VerticalAlignment="Top" Width="50" Margin="0" d:IsLocked="True"/>
 				<Image Margin="10,10,0,0" Source="Pizza-50.png" Stretch="Fill" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" d:IsLocked="True"/>
 			</Grid>
+			<ScrollViewer HorizontalAlignment="Left" Height="577" Margin="260,0,-644,-0.334" VerticalAlignment="Top" Width="650">
+				<StackPanel>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+					<Button Content="Item" BorderBrush="#FFCCCCCC" Background="White" Height="45"/>
+				</StackPanel>
+			</ScrollViewer>
 		</Grid>
-		<StackPanel HorizontalAlignment="Left" Height="577" Margin="254,0,0,0" VerticalAlignment="Top" Width="650"/>
 	</Grid>
 </Window>
