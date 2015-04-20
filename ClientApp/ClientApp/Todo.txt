@@ -1,0 +1,7 @@
+﻿WPF listview with custom view model, ItemTemplate
+
+RVM
+
+Commit changes when done
+
+WPF Binding??? Not curly braces?
