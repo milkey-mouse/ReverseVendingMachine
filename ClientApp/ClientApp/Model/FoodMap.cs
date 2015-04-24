@@ -10,8 +10,8 @@ namespace ClientApp.Model
     {
         public FoodMap()
         {
-            Map(m => m.Title).Name("Name"); //couldn't call it "Name" because of conflicts
-            Map(m => m.SubCatRoot).Name("Category"); //same with this
+            //Map(m => m.URL).Name("Title"); //couldn't call it "Name" because of conflicts
+            //Map(m => m.Category).Name("SubCatRoot"); //same with this, other SubCat's are labeled correctly
         }
     }
 }
