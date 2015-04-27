@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Net;
+using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,68 +25,175 @@ namespace BorderLess
 
         public bool DisableSplashOnDownload = true;
 
+        ClientApp.Model.FoodSource FoodData = new ClientApp.Model.FoodSource();
+
+        public Dictionary<String, List<ClientApp.Model.Food>> FoodCache = new Dictionary<String, List<ClientApp.Model.Food>>();
+
+        public bool CacheBuilt = false;
+
         public WindowBorderLess()
         {
             InitializeComponent();
 
-            _foodSource = new ClientApp.Model.FoodSource();
-            _foodSource.Title = "Reverse Vending Machine - Derpton Middle School";
+            FoodData = new ClientApp.Model.FoodSource();
+            FoodData.Title = "Reverse Vending Machine - Derpton Middle School";
 
             Directory.CreateDirectory(AppDataPath); //it already checks for it
 
-            _foodSource.Foods = new ObservableCollection<ClientApp.Model.Food>()
-                {
-                    //DownloadAndParse().ToArray()
-                };
+            FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
+
+            List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
 
             foreach (var food in DownloadAndParse())
             {
-                if (food.Name.StartsWith(food.Manufacturer))
+                string[] searchprops = {food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC};
+                foreach (var word in string.Join(" ", searchprops).Split())
                 {
-                    food.Name = food.Name.Substring(food.Manufacturer.Length + 1); //quickest manipulation to remove manufacturer
+                    string target = StripPunctuation(word.ToLower());
+                    if (FoodCache.ContainsKey(target) == false)
+                    {
+                        FoodCache.Add(target, new List<ClientApp.Model.Food>());
+                    }
+                    FoodCache[target].Add(food);
                 }
-                //food.Category = food.Category + "/" + food.SubCat1 + "/" + food.SubCat2 + "/";
                 string[] foodpath = {food.Category, food.SubCat1, food.SubCat2, ""}; //the empty string is for the final slash
                 food.Category = string.Join("/", foodpath);
-                _foodSource.Foods.Add(food);
+                tempFoods.Add(food);
             }
-
-            //for (int i = 1; i <= 2000; i++)
-            //{
-            //    _foodSource.Foods.Add(new ClientApp.Model.Food()
-            //    {
-            //        Category = "Category " + i.ToString() + "/",
-            //        Title = "Food " + i.ToString(),
-            //    });
-            //}
-            //
-            //_foodSource.Foods.Add(new ClientApp.Model.Food()
-            //{
-            //    Category = "First category/",
-            //    Title = "First food",
-            //});
-            
-
-            DataContext = _foodSource; //sets away from designer data source, only runs on compile
+            var foods = from food in tempFoods
+                        orderby food.Name ascending
+                        select food;
+            foreach (ClientApp.Model.Food food in foods)
+            {
+                FoodData.Foods.Add(food);
+            }
+            DataContext = FoodData; //sets away from designer data source, only runs on compile
+            FoodsView.ItemsSource = FoodData.Foods;
         }
 
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        string StripPunctuation(string s)
         {
-            Button btn = (Button)sender;
-            string name = btn.Name;
-            Console.WriteLine(name);
+            var sb = new StringBuilder();
+            foreach (char c in s)
+            {
+                if (!char.IsPunctuation(c))
+                    sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        void Reindex()
+        {
+            FoodCache = new Dictionary<String, List<ClientApp.Model.Food>>();
+            var splitslash = "/".ToCharArray();
+            foreach (var food in FoodData.Foods)
+            {
+                List<string> searchprops = new List<string>(); //{food.Category, food.SubCat1, food.SubCat2, food.Manufacturer, food.Name, food.UPC };
+                if(ManufacturerBox.IsChecked == true)
+                {
+                    searchprops.Add(food.Manufacturer);
+                }
+                if (CategoryBox.IsChecked == true)
+                {
+                    foreach(var prop in food.Category.Split(splitslash))
+                    {
+                        searchprops.Add(prop);
+                    }
+                }
+                if (NameBox.IsChecked == true)
+                {
+                    searchprops.Add(food.Name);
+                }
+                if (UPCBox.IsChecked == true)
+                {
+                    searchprops.Add(food.UPC);
+                }
+                foreach (var word in string.Join(" ", searchprops).Split())
+                {
+                    string target = StripPunctuation(word.ToLower());
+                    if (FoodCache.ContainsKey(target) == false)
+                    {
+                        FoodCache.Add(target, new List<ClientApp.Model.Food>());
+                    }
+                    FoodCache[target].Add(food);
+                }
+            }
         }
 
         private IEnumerable<Food> DownloadAndParse()
         {
             DisableSplashOnDownload = false;
-            //DownloadAll(false, false);
-            new WebClient().DownloadFile(new Uri("http://team-ivan.com/rvm/all_products.csv"), AppDataPath + "products.csv");
+            if(File.Exists(AppDataPath + "products.csv") == false)
+            {
+                DownloadAll(true, false);
+            }
             var csv = new CsvReader(File.OpenText(AppDataPath + "products.csv"));
             var records = csv.GetRecords<Food>(); //map the csv to the foods
             LoadingSplash.Visibility = Visibility.Hidden;
             DisableSplashOnDownload = true;
             return records;
+        }
+
+        private void SearchUpdate(object sender, TextChangedEventArgs e)
+        {
+            UpdateSearch();
+        }
+
+        void UpdateSearch()
+        {
+            if (SearchBox.Text == "")
+            {
+                SearchLabel.Visibility = Visibility.Visible;
+
+                DataContext = FoodData;
+                FoodsView.ItemsSource = FoodData.Foods;
+            }
+            else
+            {
+                SearchLabel.Visibility = Visibility.Hidden;
+
+                _foodSource = new ClientApp.Model.FoodSource();
+                _foodSource.Title = FoodData.Title;
+                _foodSource.Foods = new ObservableCollection<ClientApp.Model.Food>();
+                Dictionary<ClientApp.Model.Food, int> _resultsDict = new Dictionary<ClientApp.Model.Food, int>();
+                String[] searchWords = StripPunctuation(SearchBox.Text.ToLower()).Split();
+                bool firstWord = true;
+                foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+                {
+                    firstWord = true;
+                    foreach (string searchWord in searchWords)
+                    {
+                        if(searchWord == "")
+                        {
+                            continue;
+                        }
+                        if (foodEntry.Key.StartsWith(searchWord))
+                        {
+                            foreach (ClientApp.Model.Food food in foodEntry.Value)
+                            {
+                                if (_resultsDict.ContainsKey(food))
+                                {
+                                    _resultsDict[food] += 1;
+                                }
+                                else if (firstWord)
+                                {
+                                    _resultsDict.Add(food, 0);
+                                }
+                            }
+                        }
+                        firstWord = false;
+                    }
+                }
+                var foods = from food in _resultsDict
+                            orderby food.Value descending
+                            select food.Key;
+                foreach (ClientApp.Model.Food food in foods)
+                {
+                    _foodSource.Foods.Add(food);
+                }
+                DataContext = _foodSource;
+                FoodsView.ItemsSource = _foodSource.Foods;
+            }
         }
 
         private void DownloadAll(bool showDialog, bool async = true)
@@ -100,7 +209,7 @@ namespace BorderLess
                 }
                 else
                 {
-                    webClient.DownloadFileAsync(new Uri("http://team-ivan.com/rvm/all_products.csv"), AppDataPath + "products.csv");
+                    webClient.DownloadFile(new Uri("http://team-ivan.com/rvm/all_products.csv"), AppDataPath + "products.csv");
                 }
             }
             catch (Exception)
@@ -119,6 +228,46 @@ namespace BorderLess
             {
                 LoadingSplash.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void SearchLabelMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            SearchBox.Focus();
+        }
+
+        private void SearchLabel_StylusDown(object sender, System.Windows.Input.StylusDownEventArgs e)
+        {
+            SearchBox.Focus();
+        }
+
+        private void SearchLabel_TouchDown(object sender, System.Windows.Input.TouchEventArgs e)
+        {
+            SearchBox.Focus();
+        }
+
+
+        private void CategoryBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //Reindex();
+            UpdateSearch();
+        }
+
+        private void ManufacturerBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //Reindex();
+            UpdateSearch();
+        }
+
+        private void NameBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //Reindex();
+            UpdateSearch();
+        }
+
+        private void UPCBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //Reindex();
+            UpdateSearch();
         }
     }
 }

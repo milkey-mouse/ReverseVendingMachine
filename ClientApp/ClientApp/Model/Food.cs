@@ -13,5 +13,6 @@ namespace ClientApp.Model
         public string SubCat2 { get; set; }
         public string Manufacturer { get; set; }
         public string URL { get; set; }
+        public string UPC { get; set; }
     }
 }

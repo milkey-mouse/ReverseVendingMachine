@@ -25,56 +25,25 @@
                 <Ellipse Fill="#FF2ECC71" HorizontalAlignment="Left" Height="50" Stroke="#FF2ECC71" VerticalAlignment="Top" Width="50" Margin="0" d:IsLocked="True"/>
                 <Image Margin="10,10,0,0" Source="Pizza-50.png" Stretch="Fill" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" d:IsLocked="True"/>
             </Grid>
-            <ListBox ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="577" Margin="266,0,-775,-0.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}">
+            <ListBox x:Name="FoodsView" ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="577" Margin="266,0,-775,-0.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" SelectionMode="Extended">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <!--<Button x:Name="FoodButton" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="630" Padding="1" Margin="-5,-2,-20,-2" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24" HorizontalAlignment="Center" BorderThickness="0,1">-->
                         <Viewbox Height="45" Width="675" StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,-5,0">
                             <StackPanel Margin="-1,-1,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                                 <Label Content="{Binding Category}" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,6" VerticalAlignment="Center" />
                                 <Label Content="{Binding Name}" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Viewbox>
-                        <!--</Button>-->
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <!--<ScrollViewer x:Name="ItemScroll" HorizontalAlignment="Left" Height="577" Margin="266,0,-644,-0.334" VerticalAlignment="Top" Width="644">
-                <VirtualizingStackPanel x:Name="ItemList">
-                    <Button x:Name="Chaaaaaps" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="625" Padding="1" Margin="0,0,0,-1" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24">
-                		<StackPanel Height="43" Width="623" Margin="-1,-1,0,0" Orientation="Horizontal">
-							<Label Content="Snacks/Chips &amp; Pretzels/Potato Chips/" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,5.86" VerticalAlignment="Center" />
-                			<Label Content="Chaaaaaps" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,3,0,0" VerticalAlignment="Center" BorderThickness="0" />
-                		</StackPanel>
-                	</Button>
-                    <Button x:Name="Duhreeters" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="625" Padding="1" Margin="0,0,0,-1" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24">
-                        <StackPanel Height="43" Width="623" Margin="-1,-1,0,0" Orientation="Horizontal">
-                            <Label Content="Snacks/Chips &amp; Pretzels/Potato Chips/" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,5.86" VerticalAlignment="Center" />
-                            <Label Content="Duhreeters" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,3,0,0" VerticalAlignment="Center" BorderThickness="0" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="Chietous" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="625" Padding="1" Margin="0,0,0,-1" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24">
-                        <StackPanel Height="43" Width="623" Margin="-1,-1,0,0" Orientation="Horizontal">
-                            <Label Content="Snacks/Chips &amp; Pretzels/Cheese Puffs/" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,5.86" VerticalAlignment="Center" />
-                            <Label Content="Chietous" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,3,0,0" VerticalAlignment="Center" BorderThickness="0" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="a1_Dollar_Diabeetus" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="625" Padding="1" Margin="0,0,0,-1" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24">
-                        <StackPanel Height="43" Width="623" Margin="-1,-1,0,0" Orientation="Horizontal">
-                            <Label Content="Snacks/Chips &amp; Pretzels/Potato Chips/" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,5.86" VerticalAlignment="Center" />
-                            <Label Content="1 Dollar Diabeetus" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,3,0,0" VerticalAlignment="Center" BorderThickness="0" />
-                        </StackPanel>
-                    </Button>
-                    <Button x:Name="Liquid_MLG" BorderBrush="#FFCCCCCC" Background="White" Height="45" ClipToBounds="True" Width="625" Padding="1" Margin="0,0,0,-1" Click="Button_Click" HorizontalContentAlignment="Left" FontSize="24">
-                        <StackPanel Height="43" Width="623" Margin="-1,-1,0,0" Orientation="Horizontal">
-                            <Label Content="Beverages/Soda Pop/Cola/" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,5.86" VerticalAlignment="Center" />
-                            <Label Content="Liquid MLG" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,3,0,0" VerticalAlignment="Center" BorderThickness="0" />
-                        </StackPanel>
-                    </Button>
-                </VirtualizingStackPanel>
-            </ScrollViewer>-->
         </Grid>
         <Grid HorizontalAlignment="Left" Height="100" Margin="508,-73,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBox HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="213" Margin="965,16,0,0" SelectionBrush="#FF69FF92"/>
+        <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,570" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
+        <Label x:Name="SearchLabel" Content="Search" HorizontalAlignment="Left" Margin="965,15,0,0" VerticalAlignment="Top" Height="23" FontStyle="Italic" Foreground="#FF7F7F7F" MouseDown="SearchLabelMouseDown" StylusDown="SearchLabel_StylusDown" TouchDown="SearchLabel_TouchDown"/>
+        <CheckBox x:Name="ManufacturerBox" Content="Manufacturer" HorizontalAlignment="Left" Margin="965,43,0,0" VerticalAlignment="Top" Checked="ManufacturerBox_Checked"/>
+        <CheckBox x:Name="CategoryBox" Content="Category" HorizontalAlignment="Left" Margin="965,63,0,0" VerticalAlignment="Top" IsChecked="True" Checked="CategoryBox_Checked"/>
+        <CheckBox x:Name="NameBox" Content="Name" HorizontalAlignment="Left" Margin="965,83,0,0" VerticalAlignment="Top" IsChecked="True" Checked="NameBox_Checked"/>
+        <CheckBox x:Name="UPCBox" Content="UPC" HorizontalAlignment="Left" Margin="965,103,0,0" VerticalAlignment="Top" IsChecked="True" Checked="UPCBox_Checked"/>
     </Grid>
 </Window>
