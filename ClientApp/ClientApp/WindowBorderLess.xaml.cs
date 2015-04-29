@@ -67,6 +67,7 @@ namespace BorderLess
             {
                 FoodData.Foods.Add(food);
             }
+            CacheBuilt = true;
             DataContext = FoodData; //sets away from designer data source, only runs on compile
             FoodsView.ItemsSource = FoodData.Foods;
         }
@@ -82,8 +83,37 @@ namespace BorderLess
             return sb.ToString();
         }
 
-        void Reindex()
+        //Tuple<List<String>, List<String>> GetSearchWords()
+        //{
+        //    string[] all = SearchBox.Text.ToLower().Split("\"".ToCharArray());
+        //    var isQuoted = false;
+        //    List<String> quoteList = new List<String>();
+        //    List<String> normalList = new List<String>();
+        //    foreach(string quote in all)
+        //    {
+        //        isQuoted = !isQuoted;
+        //        if(isQuoted == true)
+        //        {
+        //            quoteList.Add(quote.Replace("  ", " "));
+        //        }
+        //        else
+        //        {
+        //            normalList.AddRange(quote.Replace("  ", " ").Split());
+        //        }
+        //    }
+        //    if(isQuoted == true)
+        //    {
+        //        quoteList.
+        //    }
+        //    return Tuple.Create(quoteList, normalList);
+        //}
+
+        public void Reindex()
         {
+            if(CacheBuilt == false)
+            {
+                return; //hasn't yet initialized foods
+            }
             FoodCache = new Dictionary<String, List<ClientApp.Model.Food>>();
             var splitslash = "/".ToCharArray();
             foreach (var food in FoodData.Foods)
@@ -156,40 +186,124 @@ namespace BorderLess
                 _foodSource.Title = FoodData.Title;
                 _foodSource.Foods = new ObservableCollection<ClientApp.Model.Food>();
                 Dictionary<ClientApp.Model.Food, int> _resultsDict = new Dictionary<ClientApp.Model.Food, int>();
-                String[] searchWords = StripPunctuation(SearchBox.Text.ToLower()).Split();
-                bool firstWord = true;
-                foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+                String[] searchWords = SearchBox.Text.ToLower().Split();
+                List<String> orWords = new List<String>();
+                List<String> andWords = new List<String>();
+                List<String> notWords = new List<String>();
+                bool andDefault = (searchWords[0].StartsWith("+"));
+                if (andDefault)
                 {
-                    firstWord = true;
-                    foreach (string searchWord in searchWords)
+                    searchWords[0] = searchWords[0].Substring(1);
+                }
+                foreach (string searchWord in searchWords)
+                {
+                    if (searchWord == "")
                     {
-                        if(searchWord == "")
+                        return;
+                    }
+                    if (searchWord.StartsWith("-"))
+                    {
+                        notWords.Add(StripPunctuation(searchWord.Substring(1)));
+                    }
+                    else if (andDefault)
+                    {
+                        andWords.Add(StripPunctuation(searchWord));
+                    }
+                    else
+                    {
+                        orWords.Add(StripPunctuation(searchWord));
+                    }
+                }
+                bool firstWord = true;
+                if (orWords.Count > 0)
+                {
+                    foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+                    {
+                        firstWord = true;
+                        foreach (string searchWord in orWords)
                         {
-                            continue;
-                        }
-                        if (foodEntry.Key.StartsWith(searchWord))
-                        {
-                            foreach (ClientApp.Model.Food food in foodEntry.Value)
+                            if (foodEntry.Key.StartsWith(searchWord))
                             {
-                                if (_resultsDict.ContainsKey(food))
+                                foreach (ClientApp.Model.Food food in foodEntry.Value)
                                 {
-                                    _resultsDict[food] += 1;
+                                    if (_resultsDict.ContainsKey(food))
+                                    {
+                                        _resultsDict[food] += 1;
+                                    }
+                                    else if (firstWord)
+                                    {
+                                        _resultsDict.Add(food, 0);
+                                    }
                                 }
-                                else if (firstWord)
+                            }
+                            firstWord = false;
+                        }
+                    }
+                }
+                else if (andWords.Count > 0)
+                {
+                    Dictionary<ClientApp.Model.Food, List<String>> _andDict = new Dictionary<ClientApp.Model.Food, List<String>>();
+                    foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+                    {
+                        foreach (string searchWord in andWords)
+                        {
+                            if (foodEntry.Key.StartsWith(searchWord))
+                            {
+                                foreach (ClientApp.Model.Food food in foodEntry.Value)
                                 {
-                                    _resultsDict.Add(food, 0);
+                                    if (_andDict.ContainsKey(food))
+                                    {
+                                        if(!_andDict[food].Contains(searchWord))
+                                        {
+                                            _andDict[food].Add(searchWord);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _andDict.Add(food, new List<String>());
+                                        _andDict[food].Add(searchWord);
+                                    }
+                                    if (_andDict[food].Count == andWords.Count && _resultsDict.ContainsKey(food) == false)
+                                    {
+                                        _resultsDict.Add(food, 0);
+                                    }
                                 }
                             }
                         }
-                        firstWord = false;
                     }
                 }
-                var foods = from food in _resultsDict
-                            orderby food.Value descending
-                            select food.Key;
-                foreach (ClientApp.Model.Food food in foods)
+                if(notWords.Count > 0)
                 {
-                    _foodSource.Foods.Add(food);
+                    foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+                    {
+                        foreach (string searchWord in notWords)
+                        {
+                            if (foodEntry.Key.StartsWith(searchWord))
+                            {
+                                foreach (ClientApp.Model.Food food in foodEntry.Value)
+                                {
+                                    if (_resultsDict.ContainsKey(food))
+                                    {
+                                        _resultsDict.Remove(food);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if(andWords.Count == 0)
+                {
+                    var foods = from food in _resultsDict
+                                orderby food.Value descending
+                                select food.Key;
+                    foreach (ClientApp.Model.Food food in foods)
+                    {
+                        _foodSource.Foods.Add(food);
+                    }
+                }
+                else
+                {
+                    _foodSource.Foods = new ObservableCollection<Food>(_resultsDict.Keys);
                 }
                 DataContext = _foodSource;
                 FoodsView.ItemsSource = _foodSource.Foods;
@@ -245,29 +359,125 @@ namespace BorderLess
             SearchBox.Focus();
         }
 
-
-        private void CategoryBox_Checked(object sender, RoutedEventArgs e)
+        private void PropertyChecked(object sender, RoutedEventArgs e)
         {
-            //Reindex();
+            Reindex();
             UpdateSearch();
         }
 
-        private void ManufacturerBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //Reindex();
-            UpdateSearch();
-        }
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (SearchBox.Text == "")
+        //    {
+        //        SearchLabel.Visibility = Visibility.Visible;
 
-        private void NameBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //Reindex();
-            UpdateSearch();
-        }
+        //        DataContext = FoodData;
+        //        FoodsView.ItemsSource = FoodData.Foods;
+        //    }
+        //    else
+        //    {
+        //        SearchLabel.Visibility = Visibility.Hidden;
 
-        private void UPCBox_Checked(object sender, RoutedEventArgs e)
-        {
-            //Reindex();
-            UpdateSearch();
-        }
+        //        _foodSource = new ClientApp.Model.FoodSource();
+        //        _foodSource.Title = FoodData.Title;
+        //        _foodSource.Foods = new ObservableCollection<ClientApp.Model.Food>();
+        //        Dictionary<ClientApp.Model.Food, int> _resultsDict = new Dictionary<ClientApp.Model.Food, int>();
+        //        String[] searchWords = SearchBox.Text.ToLower().Split();
+        //        List<String> orWords = new List<String>();
+        //        List<String> andWords = new List<String>();
+        //        List<String> notWords = new List<String>();
+        //        bool andDefault = (searchWords[0].StartsWith("+"));
+        //        if (andDefault)
+        //        {
+        //            searchWords[0] = searchWords[0].Substring(1);
+        //        }
+        //        foreach (string searchWord in searchWords)
+        //        {
+        //            if (searchWord == "")
+        //            {
+        //                return;
+        //            }
+        //            if (searchWord.StartsWith("-"))
+        //            {
+        //                notWords.Add(StripPunctuation(searchWord.Substring(1)));
+        //            }
+        //            else if (andDefault)
+        //            {
+        //                andWords.Add(StripPunctuation(searchWord));
+        //            }
+        //            else
+        //            {
+        //                orWords.Add(StripPunctuation(searchWord));
+        //            }
+        //        }
+        //        bool firstWord = true;
+        //        if (orWords.Count > 0)
+        //        {
+        //            foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+        //            {
+        //                firstWord = true;
+        //                foreach (string searchWord in orWords)
+        //                {
+        //                    if (foodEntry.Key.StartsWith(searchWord))
+        //                    {
+        //                        foreach (ClientApp.Model.Food food in foodEntry.Value)
+        //                        {
+        //                            if (_resultsDict.ContainsKey(food))
+        //                            {
+        //                                _resultsDict[food] += 1;
+        //                            }
+        //                            else if (firstWord)
+        //                            {
+        //                                _resultsDict.Add(food, 0);
+        //                            }
+        //                        }
+        //                    }
+        //                    firstWord = false;
+        //                }
+        //            }
+        //        }
+        //        else if(andWords.Count() > 0)
+        //        {
+        //            Dictionary<String, List<ClientApp.Model.Food>> _andKeys = new Dictionary<String, List<ClientApp.Model.Food>>();
+        //            foreach (var word in andWords)
+        //            {
+        //                _andKeys.Add(word, new List<ClientApp.Model.Food>());
+        //            }
+        //            foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
+        //            {
+        //                foreach (var word in andWords)
+        //                {
+        //                    if(foodEntry.Key.StartsWith(word))
+        //                    {
+        //                        foreach (ClientApp.Model.Food food in foodEntry.Value)
+        //                        {
+        //                            _andKeys[word].Add(food);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            List<ClientApp.Model.Food> _andList = new List<ClientApp.Model.Food>(FoodData.Foods);
+        //            foreach (var food in _andList)
+        //            {
+        //                foreach (string searchWord in andWords)
+        //                {
+        //                    if(_andKeys[searchWord].Contains(food) == false)
+        //                    {
+                                
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        var targetValue = andWords.Count();
+        //        foreach(string word in andWords)
+        //        {
+        //            Console.Write(word + ", ");
+        //        }
+        //        foreach (KeyValuePair<ClientApp.Model.Food, int> food in _andDict)
+        //        {
+        //            Console.WriteLine(food.Key.Name + ":" + food.Value.ToString());
+        //        }
+        //    }
+        //}
     }
 }
