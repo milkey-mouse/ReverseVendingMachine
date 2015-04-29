@@ -272,6 +272,13 @@ namespace BorderLess
                         }
                     }
                 }
+                else if(notWords.Count > 0)
+                {
+                    foreach(ClientApp.Model.Food food in FoodData.Foods)
+                    {
+                        _resultsDict.Add(food, 0);
+                    }
+                }
                 if(notWords.Count > 0)
                 {
                     foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
