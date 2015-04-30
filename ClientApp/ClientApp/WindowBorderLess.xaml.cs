@@ -11,6 +11,7 @@ using System.Text;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Threading.Tasks;
 
 namespace BorderLess
 {
@@ -31,45 +32,54 @@ namespace BorderLess
 
         public bool CacheBuilt = false;
 
+        private Task LoadTask = null;
+
+        private TaskScheduler Scheduler = null;
+
         public WindowBorderLess()
         {
             InitializeComponent();
 
-            FoodData = new ClientApp.Model.FoodSource();
-            FoodData.Title = "Reverse Vending Machine - Derpton Middle School";
+            Scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-            Directory.CreateDirectory(AppDataPath); //it already checks for it
+            LoadingSplash.Visibility = Visibility.Visible;
 
-            FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
-
-            List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
-
-            foreach (var food in DownloadAndParse())
-            {
-                string[] searchprops = {food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC};
-                foreach (var word in string.Join(" ", searchprops).Split())
+            LoadTask = Task.Factory.StartNew<ClientApp.Model.FoodSource>(() =>
                 {
-                    string target = StripPunctuation(word.ToLower());
-                    if (FoodCache.ContainsKey(target) == false)
+                    FoodData = new ClientApp.Model.FoodSource();
+                    FoodData.Title = "Reverse Vending Machine - Derpton Middle School";
+
+                    Directory.CreateDirectory(AppDataPath); //it already checks for it
+
+                    FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
+
+                    List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
+                    Console.WriteLine("1");
+                    foreach (var food in DownloadAndParse())
                     {
-                        FoodCache.Add(target, new List<ClientApp.Model.Food>());
+                        string[] searchprops = { food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC };
+                        foreach (var word in string.Join(" ", searchprops).Split())
+                        {
+                            string target = StripPunctuation(word.ToLower());
+                            if (FoodCache.ContainsKey(target) == false)
+                            {
+                                FoodCache.Add(target, new List<ClientApp.Model.Food>());
+                            }
+                            FoodCache[target].Add(food);
+                        }
+                        string[] foodpath = { food.Category, food.SubCat1, food.SubCat2, "" }; //the empty string is for the final slash
+                        food.Category = string.Join("/", foodpath);
+                        tempFoods.Add(food);
                     }
-                    FoodCache[target].Add(food);
-                }
-                string[] foodpath = {food.Category, food.SubCat1, food.SubCat2, ""}; //the empty string is for the final slash
-                food.Category = string.Join("/", foodpath);
-                tempFoods.Add(food);
-            }
-            var foods = from food in tempFoods
-                        orderby food.Name ascending
-                        select food;
-            foreach (ClientApp.Model.Food food in foods)
-            {
-                FoodData.Foods.Add(food);
-            }
-            CacheBuilt = true;
-            DataContext = FoodData; //sets away from designer data source, only runs on compile
-            FoodsView.ItemsSource = FoodData.Foods;
+                    var foods = from food in tempFoods
+                                orderby food.Name ascending
+                                select food;
+                    foreach (ClientApp.Model.Food food in foods)
+                    {
+                        FoodData.Foods.Add(food);
+                    }
+                    return FoodData;
+                }).ContinueWith((i) => { FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; }, Scheduler);
         }
 
         string StripPunctuation(string s)
@@ -82,31 +92,6 @@ namespace BorderLess
             }
             return sb.ToString();
         }
-
-        //Tuple<List<String>, List<String>> GetSearchWords()
-        //{
-        //    string[] all = SearchBox.Text.ToLower().Split("\"".ToCharArray());
-        //    var isQuoted = false;
-        //    List<String> quoteList = new List<String>();
-        //    List<String> normalList = new List<String>();
-        //    foreach(string quote in all)
-        //    {
-        //        isQuoted = !isQuoted;
-        //        if(isQuoted == true)
-        //        {
-        //            quoteList.Add(quote.Replace("  ", " "));
-        //        }
-        //        else
-        //        {
-        //            normalList.AddRange(quote.Replace("  ", " ").Split());
-        //        }
-        //    }
-        //    if(isQuoted == true)
-        //    {
-        //        quoteList.
-        //    }
-        //    return Tuple.Create(quoteList, normalList);
-        //}
 
         public void Reindex()
         {
@@ -152,15 +137,16 @@ namespace BorderLess
 
         private IEnumerable<Food> DownloadAndParse()
         {
-            DisableSplashOnDownload = false;
             if(File.Exists(AppDataPath + "products.csv") == false)
             {
                 DownloadAll(true, false);
             }
+            else if (DateTime.Today - File.GetLastWriteTime(AppDataPath + "products.csv") > new TimeSpan(30,0,0,0))
+            {
+                DownloadAll(false, false);
+            }
             var csv = new CsvReader(File.OpenText(AppDataPath + "products.csv"));
             var records = csv.GetRecords<Food>(); //map the csv to the foods
-            LoadingSplash.Visibility = Visibility.Hidden;
-            DisableSplashOnDownload = true;
             return records;
         }
 
@@ -321,7 +307,7 @@ namespace BorderLess
         {
             try
             {
-                LoadingSplash.Visibility = Visibility.Visible;
+                //LoadingSplash.Visibility = Visibility.Visible;
                 WebClient webClient = new WebClient();
                 webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(DownloadCompleted);
                 if (async)
@@ -372,119 +358,26 @@ namespace BorderLess
             UpdateSearch();
         }
 
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (SearchBox.Text == "")
-        //    {
-        //        SearchLabel.Visibility = Visibility.Visible;
-
-        //        DataContext = FoodData;
-        //        FoodsView.ItemsSource = FoodData.Foods;
-        //    }
-        //    else
-        //    {
-        //        SearchLabel.Visibility = Visibility.Hidden;
-
-        //        _foodSource = new ClientApp.Model.FoodSource();
-        //        _foodSource.Title = FoodData.Title;
-        //        _foodSource.Foods = new ObservableCollection<ClientApp.Model.Food>();
-        //        Dictionary<ClientApp.Model.Food, int> _resultsDict = new Dictionary<ClientApp.Model.Food, int>();
-        //        String[] searchWords = SearchBox.Text.ToLower().Split();
-        //        List<String> orWords = new List<String>();
-        //        List<String> andWords = new List<String>();
-        //        List<String> notWords = new List<String>();
-        //        bool andDefault = (searchWords[0].StartsWith("+"));
-        //        if (andDefault)
-        //        {
-        //            searchWords[0] = searchWords[0].Substring(1);
-        //        }
-        //        foreach (string searchWord in searchWords)
-        //        {
-        //            if (searchWord == "")
-        //            {
-        //                return;
-        //            }
-        //            if (searchWord.StartsWith("-"))
-        //            {
-        //                notWords.Add(StripPunctuation(searchWord.Substring(1)));
-        //            }
-        //            else if (andDefault)
-        //            {
-        //                andWords.Add(StripPunctuation(searchWord));
-        //            }
-        //            else
-        //            {
-        //                orWords.Add(StripPunctuation(searchWord));
-        //            }
-        //        }
-        //        bool firstWord = true;
-        //        if (orWords.Count > 0)
-        //        {
-        //            foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
-        //            {
-        //                firstWord = true;
-        //                foreach (string searchWord in orWords)
-        //                {
-        //                    if (foodEntry.Key.StartsWith(searchWord))
-        //                    {
-        //                        foreach (ClientApp.Model.Food food in foodEntry.Value)
-        //                        {
-        //                            if (_resultsDict.ContainsKey(food))
-        //                            {
-        //                                _resultsDict[food] += 1;
-        //                            }
-        //                            else if (firstWord)
-        //                            {
-        //                                _resultsDict.Add(food, 0);
-        //                            }
-        //                        }
-        //                    }
-        //                    firstWord = false;
-        //                }
-        //            }
-        //        }
-        //        else if(andWords.Count() > 0)
-        //        {
-        //            Dictionary<String, List<ClientApp.Model.Food>> _andKeys = new Dictionary<String, List<ClientApp.Model.Food>>();
-        //            foreach (var word in andWords)
-        //            {
-        //                _andKeys.Add(word, new List<ClientApp.Model.Food>());
-        //            }
-        //            foreach (KeyValuePair<String, List<ClientApp.Model.Food>> foodEntry in FoodCache)
-        //            {
-        //                foreach (var word in andWords)
-        //                {
-        //                    if(foodEntry.Key.StartsWith(word))
-        //                    {
-        //                        foreach (ClientApp.Model.Food food in foodEntry.Value)
-        //                        {
-        //                            _andKeys[word].Add(food);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            List<ClientApp.Model.Food> _andList = new List<ClientApp.Model.Food>(FoodData.Foods);
-        //            foreach (var food in _andList)
-        //            {
-        //                foreach (string searchWord in andWords)
-        //                {
-        //                    if(_andKeys[searchWord].Contains(food) == false)
-        //                    {
-                                
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        var targetValue = andWords.Count();
-        //        foreach(string word in andWords)
-        //        {
-        //            Console.Write(word + ", ");
-        //        }
-        //        foreach (KeyValuePair<ClientApp.Model.Food, int> food in _andDict)
-        //        {
-        //            Console.WriteLine(food.Key.Name + ":" + food.Value.ToString());
-        //        }
-        //    }
-        //}
+        private void FoodsView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FoodsView.SelectedItems.Count == 1)
+            {
+                ItemCount.Content = FoodsView.SelectedItems.Count + " item selected";
+                ClientApp.Model.Food foodItem = (ClientApp.Model.Food)FoodsView.SelectedItem;
+                ItemName.Text = foodItem.Name;
+            }
+            else
+            {
+                ItemCount.Content = FoodsView.SelectedItems.Count + " items selected";
+                if(FoodsView.SelectedItems.Count == 0)
+                {
+                    ItemName.Text = "No item selected";
+                }
+                else
+                {
+                    ItemName.Text = "Multiple items selected";
+                }
+            }
+        }
     }
 }

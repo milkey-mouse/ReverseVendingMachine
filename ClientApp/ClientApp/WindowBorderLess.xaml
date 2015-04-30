@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="BorderLess.WindowBorderLess"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"    
-        Title="MainWindow" Height="650" Width="1200" ResizeMode="NoResize" 
+        Title="MainWindow" Height="625" Width="1200" ResizeMode="NoResize" 
         Style="{DynamicResource MainWindowStyle}"
         d:DataContext="{d:DesignData Source=/SampleData/FoodSource.xaml}" WindowStyle="None">
     <Grid>
@@ -17,15 +17,15 @@
             </Image>
         </Grid>
         <Label Content="{Binding Title}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-35,0,0" Foreground="#FFBBBBBB" FontSize="21.333"/>
-        <Grid HorizontalAlignment="Left" Height="576.666" Margin="-6,0.334,0,0" VerticalAlignment="Center" Width="266" Background="#FFB2B2B2" Panel.ZIndex="-5">
-            <Viewbox HorizontalAlignment="Left" Height="40" Margin="65,15,0,0" VerticalAlignment="Top" Width="185" StretchDirection="UpOnly">
-                <TextBlock x:Name="ItemName" HorizontalAlignment="Center" TextWrapping="Wrap" Text="No item selected" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI"></TextBlock>
-            </Viewbox>
-            <Grid x:Name="PizzaIcon" HorizontalAlignment="Left" Height="50" Margin="10,10,0,0" VerticalAlignment="Top" Width="50">
+        <Grid HorizontalAlignment="Left" Height="585" Margin="-6,3,0,-5" VerticalAlignment="Center" Width="266" Background="#FFB2B2B2" Panel.ZIndex="-5">
+            <Grid HorizontalAlignment="Left" Height="81" Margin="65,0,0,504" VerticalAlignment="Center" Width="196" >
+                <TextBlock x:Name="ItemName" TextWrapping="Wrap" HorizontalAlignment="Left" Text="No item selected" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI" Margin="0" FontSize="16" IsHyphenationEnabled="True"/>
+            </Grid>
+            <Grid x:Name="PizzaIcon" HorizontalAlignment="Left" Height="50" Margin="10,17,0,0" VerticalAlignment="Top" Width="50">
                 <Ellipse Fill="#FF2ECC71" HorizontalAlignment="Left" Height="50" Stroke="#FF2ECC71" VerticalAlignment="Top" Width="50" Margin="0" d:IsLocked="True"/>
                 <Image Margin="10,10,0,0" Source="Pizza-50.png" Stretch="Fill" Width="30" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" d:IsLocked="True"/>
             </Grid>
-            <ListBox x:Name="FoodsView" ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="577" Margin="266,0,-775,-0.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" SelectionMode="Extended">
+            <ListBox x:Name="FoodsView" ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="586" Margin="266,0,-700,-9.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" SelectionMode="Extended" SelectionChanged="FoodsView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Viewbox Height="45" Width="675" StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,-5,0">
@@ -39,11 +39,12 @@
             </ListBox>
         </Grid>
         <Grid HorizontalAlignment="Left" Height="100" Margin="508,-73,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,570" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
+        <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,546" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
         <Label x:Name="SearchLabel" Content="Search" HorizontalAlignment="Left" Margin="965,15,0,0" VerticalAlignment="Top" Height="23" FontStyle="Italic" Foreground="#FF7F7F7F" MouseDown="SearchLabelMouseDown" StylusDown="SearchLabel_StylusDown" TouchDown="SearchLabel_TouchDown"/>
         <CheckBox x:Name="ManufacturerBox" Content="Manufacturer" HorizontalAlignment="Left" Margin="965,43,0,0" VerticalAlignment="Top" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
         <CheckBox x:Name="CategoryBox" Content="Category" HorizontalAlignment="Left" Margin="965,63,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
         <CheckBox x:Name="NameBox" Content="Name" HorizontalAlignment="Left" Margin="965,83,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
         <CheckBox x:Name="UPCBox" Content="UPC" HorizontalAlignment="Left" Margin="965,103,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
+        <Label x:Name="ItemCount" Content="0 items selected" HorizontalAlignment="Left" Margin="965,565,0,0" VerticalAlignment="Top" Height="25" Foreground="#FF7F7F7F"/>
     </Grid>
 </Window>
