@@ -51,10 +51,30 @@ namespace BorderLess
 
                     Directory.CreateDirectory(AppDataPath); //it already checks for it
 
+                    try
+                    {
+                        if(System.IO.File.Exists(AppDataPath + "new_products.csv"))
+                        {
+                            System.IO.File.Delete(AppDataPath + "products.csv");
+                            System.IO.File.Copy(AppDataPath + "new_products.csv", AppDataPath + "products.csv");
+                            System.IO.File.Delete(AppDataPath + "new_products.csv");
+                        }
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            System.IO.File.Delete(AppDataPath + "new_products.csv");
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    
+
                     FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
 
                     List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
-                    Console.WriteLine("1");
                     foreach (var food in DownloadAndParse())
                     {
                         string[] searchprops = { food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC };
@@ -137,11 +157,11 @@ namespace BorderLess
 
         private IEnumerable<Food> DownloadAndParse()
         {
-            if(File.Exists(AppDataPath + "products.csv") == false)
+            if (File.Exists(AppDataPath + "products.csv") == false)
             {
                 DownloadAll(true, false);
             }
-            else if (DateTime.Today - File.GetLastWriteTime(AppDataPath + "products.csv") > new TimeSpan(30,0,0,0))
+            else if (DateTime.Today - File.GetLastWriteTime(AppDataPath + "products.csv") > new TimeSpan(30, 0, 0, 0))
             {
                 DownloadAll(false, false);
             }
@@ -319,12 +339,15 @@ namespace BorderLess
                     webClient.DownloadFile(new Uri("http://team-ivan.com/rvm/all_products.csv"), AppDataPath + "products.csv");
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                if(File.Exists(AppDataPath + "products.csv") == false || showDialog)
+                if (File.Exists(AppDataPath + "products.csv") == false || showDialog)
                 {
-                    MessageBox.Show("Could not download product metadata. Please check your Internet connection.", "Download Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Application.Current.Shutdown();
+                    MessageBox.Show(e.ToString(), "Download Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    if (File.Exists(AppDataPath + "products.csv") == false)
+                    {
+                        Application.Current.Shutdown();
+                    }
                 }
             }
         }
@@ -378,6 +401,55 @@ namespace BorderLess
                     ItemName.Text = "Multiple items selected";
                 }
             }
+        }
+
+        private void DBUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            LoadingSplash.Visibility = Visibility.Visible;
+            LoadTask = Task.Factory.StartNew<ClientApp.Model.FoodSource>(() =>
+            {
+                FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
+                List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
+                var wc = new WebClient();
+                String fileString = wc.DownloadString("http://team-ivan.com/rvm/all_products.csv");
+                if(System.IO.File.Exists(AppDataPath + "new_products.csv"))
+                {
+                    System.IO.File.Delete(AppDataPath + "new_products.csv");
+                }
+                System.IO.File.WriteAllText(AppDataPath + "new_products.csv", fileString);
+                StringReader stream = new StringReader(fileString);
+                var csv = new CsvReader(stream);
+                var records = csv.GetRecords<Food>(); //map the csv to the foods
+                foreach (var food in records)
+                {
+                    string[] searchprops = { food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC };
+                    foreach (var word in string.Join(" ", searchprops).Split())
+                    {
+                        string target = StripPunctuation(word.ToLower());
+                        if (FoodCache.ContainsKey(target) == false)
+                        {
+                            FoodCache.Add(target, new List<ClientApp.Model.Food>());
+                        }
+                        FoodCache[target].Add(food);
+                    }
+                    string[] foodpath = { food.Category, food.SubCat1, food.SubCat2, "" }; //the empty string is for the final slash
+                    food.Category = string.Join("/", foodpath);
+                    tempFoods.Add(food);
+                }
+                var foods = from food in tempFoods
+                            orderby food.Name ascending
+                            select food;
+                foreach (ClientApp.Model.Food food in foods)
+                {
+                    FoodData.Foods.Add(food);
+                }
+                return FoodData;
+            }).ContinueWith((i) => { FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; }, Scheduler);
+        }
+
+        private void EmbiggenBarcode_Up(object sender, EventArgs e)
+        {
+
         }
     }
 }

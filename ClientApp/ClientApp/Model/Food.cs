@@ -14,6 +14,6 @@ namespace ClientApp.Model
         public string Manufacturer { get; set; }
         public string URL { get; set; }
         public string UPC { get; set; }
-        public string Test;
+        public bool Allowed = true;
     }
 }

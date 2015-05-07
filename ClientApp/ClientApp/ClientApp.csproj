@@ -97,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BarcodeConverter.cs" />
     <Compile Include="Control\CaptionButtons.xaml.cs">
       <DependentUpon>CaptionButtons.xaml</DependentUpon>
     </Compile>
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="loading.gif" />
+    <Resource Include="Expand-76.png" />
     <Content Include="Resource\Microsoft.Windows.Shell.dll" />
     <Resource Include="Todo.txt" />
   </ItemGroup>
