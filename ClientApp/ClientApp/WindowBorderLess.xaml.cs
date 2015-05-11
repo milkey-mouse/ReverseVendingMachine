@@ -6,12 +6,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace BorderLess
 {
@@ -35,6 +39,10 @@ namespace BorderLess
         private Task LoadTask = null;
 
         private TaskScheduler Scheduler = null;
+
+        bool BarcodeEmbiggened = false;
+
+        Thickness BarcodeMargin = new Thickness();
 
         public WindowBorderLess()
         {
@@ -71,7 +79,6 @@ namespace BorderLess
                         }
                     }
                     
-
                     FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
 
                     List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
@@ -388,10 +395,12 @@ namespace BorderLess
                 ItemCount.Content = FoodsView.SelectedItems.Count + " item selected";
                 ClientApp.Model.Food foodItem = (ClientApp.Model.Food)FoodsView.SelectedItem;
                 ItemName.Text = foodItem.Name;
+                BarcodeImage.Content = foodItem.UPC;
             }
             else
             {
                 ItemCount.Content = FoodsView.SelectedItems.Count + " items selected";
+                BarcodeImage.Content = "";
                 if(FoodsView.SelectedItems.Count == 0)
                 {
                     ItemName.Text = "No item selected";
@@ -447,9 +456,101 @@ namespace BorderLess
             }).ContinueWith((i) => { FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; }, Scheduler);
         }
 
+        //shut up this is a great idea
+        static public void DelayCall(int msec, Action fn)
+        {
+            // Grab the dispatcher from the current executing thread
+            Dispatcher d = Dispatcher.CurrentDispatcher;
+
+            // Tasks execute in a thread pool thread
+            new Task(() =>
+            {
+                System.Threading.Thread.Sleep(msec);   // delay
+
+                // use the dispatcher to asynchronously invoke the action 
+                // back on the original thread
+                d.BeginInvoke(fn);
+            }).Start();
+        }
+
         private void EmbiggenBarcode_Up(object sender, EventArgs e)
         {
-
+            EmbiggenBarcode.IsEnabled = false;
+            if(BarcodeEmbiggened)
+            {
+                EmbiggenBarcode.Source = new BitmapImage(new Uri("Expand-76.png", UriKind.Relative));
+                PowerEase pe = new PowerEase();
+                pe.Power = 2.5;
+                Size bigSize = new Size(Barcode.Width / 2.25, Barcode.Height / 3);
+                Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+                DoubleAnimation dw = new DoubleAnimation();
+                dw.EasingFunction = pe;
+                dw.From = Barcode.Width;
+                dw.To = bigSize.Width;
+                dw.Duration = animationDuration;
+                DoubleAnimation dh = new DoubleAnimation();
+                dh.EasingFunction = pe;
+                dh.From = Barcode.Height;
+                dh.To = bigSize.Height;
+                dh.Duration = animationDuration;
+                ThicknessAnimation dm = new ThicknessAnimation();
+                dm.EasingFunction = pe;
+                dm.From = Barcode.Margin;
+                dm.To = BarcodeMargin;
+                dm.Duration = animationDuration;
+                ColorAnimation pc = new ColorAnimation();
+                pc.EasingFunction = pe;
+                Color blackFrom = Colors.Black;
+                blackFrom.A = 153;
+                pc.From = blackFrom;
+                blackFrom.A = 0;
+                pc.To = blackFrom;
+                pc.Duration = animationDuration;
+                DelayCall(500, new Action(() => { BarcodeSplash.Visibility = Visibility.Hidden; }));
+                BarcodeSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
+                Barcode.BeginAnimation(Grid.HeightProperty, dh);
+                Barcode.BeginAnimation(Grid.WidthProperty, dw);
+                Barcode.BeginAnimation(Grid.MarginProperty, dm);
+            }
+            else
+            {
+                EmbiggenBarcode.Source = new BitmapImage(new Uri("Retract-76.png", UriKind.Relative));
+                BarcodeMargin = Barcode.Margin;
+                PowerEase pe = new PowerEase();
+                pe.Power = 2.5;
+                Size bigSize = new Size(Barcode.Width * 2.25, Barcode.Height * 3);
+                Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+                DoubleAnimation dw = new DoubleAnimation();
+                dw.EasingFunction = pe;
+                dw.From = Barcode.Width;
+                dw.To = bigSize.Width;
+                dw.Duration = animationDuration;
+                DoubleAnimation dh = new DoubleAnimation();
+                dh.EasingFunction = pe;
+                dh.From = Barcode.Height;
+                dh.To = bigSize.Height;
+                dh.Duration = animationDuration;
+                ThicknessAnimation dm = new ThicknessAnimation();
+                dm.EasingFunction = pe;
+                dm.From = Barcode.Margin;
+                dm.To = new Thickness((this.Width - bigSize.Width) / 2, Barcode.Margin.Top, Barcode.Margin.Right, (this.Height - bigSize.Height) / 2);
+                dm.Duration = animationDuration;
+                ColorAnimation pc = new ColorAnimation();
+                pc.EasingFunction = pe;
+                Color blackFrom = Colors.Black;
+                blackFrom.A = 0;
+                pc.From = blackFrom;
+                blackFrom.A = 153;
+                pc.To = blackFrom;
+                pc.Duration = animationDuration;
+                BarcodeSplash.Visibility = Visibility.Visible;
+                BarcodeSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
+                Barcode.BeginAnimation(Grid.HeightProperty, dh);
+                Barcode.BeginAnimation(Grid.WidthProperty, dw);
+                Barcode.BeginAnimation(Grid.MarginProperty, dm);
+            }
+            DelayCall(510, new Action(() => { EmbiggenBarcode.IsEnabled = true; }));
+            BarcodeEmbiggened = !BarcodeEmbiggened;
         }
     }
 }

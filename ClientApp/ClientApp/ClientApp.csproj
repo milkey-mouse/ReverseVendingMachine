@@ -137,6 +137,7 @@
   <ItemGroup>
     <Resource Include="loading.gif" />
     <Resource Include="Expand-76.png" />
+    <Resource Include="Retract-76.png" />
     <Content Include="Resource\Microsoft.Windows.Shell.dll" />
     <Resource Include="Todo.txt" />
   </ItemGroup>

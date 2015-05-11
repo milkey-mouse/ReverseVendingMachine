@@ -41,7 +41,7 @@
             </Image>
         </Grid>
         <Label Content="{Binding Title}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-35,0,0" Foreground="#FFBBBBBB" FontSize="21.333"/>
-        <Grid HorizontalAlignment="Left" Height="587" Margin="-6,3,0,-7" VerticalAlignment="Center" Width="266" Background="Gainsboro" Panel.ZIndex="-5">
+        <Grid x:Name="ItemPane" HorizontalAlignment="Left" Height="587" Margin="-6,3,0,-7" VerticalAlignment="Center" Width="266" Panel.ZIndex="-5" Background="#FFC3C3C3">
             <Grid HorizontalAlignment="Left" Height="81" Margin="65,0,0,504" VerticalAlignment="Center" Width="196" >
                 <TextBlock x:Name="ItemName" TextWrapping="Wrap" HorizontalAlignment="Left" Text="No item selected" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI" Margin="0" FontSize="16" IsHyphenationEnabled="True"/>
             </Grid>
@@ -61,11 +61,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Grid x:Name="Barcode" HorizontalAlignment="Left" Height="100" VerticalAlignment="Bottom" Width="265" Background="White">
-                <Viewbox>
-                    <ContentPresenter x:Name="BarcodeImage" Content="028400088213" ContentTemplate="{StaticResource BarcodeTemplate}" Margin="2.5"/>
-                </Viewbox>
-            </Grid>
+            <TextBlock x:Name="BarcodeLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Barcode" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,457,0,106" FontSize="18" IsHyphenationEnabled="True"/>
         </Grid>
         <Grid HorizontalAlignment="Left" Height="100" Margin="508,-73,0,0" VerticalAlignment="Top" Width="100"/>
         <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,546" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
@@ -78,6 +74,12 @@
         <Separator HorizontalAlignment="Left" Height="3" Margin="965,125,0,0" VerticalAlignment="Top" Width="213"/>
         <Button x:Name="DBUpdate" Content="Update Database" HorizontalAlignment="Left" Margin="965,133,0,0" VerticalAlignment="Top" Width="213" Background="#3F2ECC71" BorderBrush="#FF2ECC71" Click="DBUpdate_Click"/>
         <!-- <Button x:Name="DBUpdate_Copy" Content="Redownload Database" HorizontalAlignment="Left" Margin="965,158,0,0" VerticalAlignment="Top" Width="213" Background="#3F00FFFF" BorderBrush="Cyan"/> -->
-        <Image x:Name="EmbiggenBarcode" Margin="235,493,931,68" Source="Expand-76.png" Stretch="Fill" Width="22" Height="22" MouseUp="EmbiggenBarcode_Up" TouchUp="EmbiggenBarcode_Up" StylusUp="EmbiggenBarcode_Up"/>
+        <Grid x:Name="BarcodeSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" MouseUp="EmbiggenBarcode_Up" Visibility="Hidden"/>
+        <Grid x:Name="Barcode" HorizontalAlignment="Left" Height="100" VerticalAlignment="Bottom" Width="266" Background="White" Margin="-6,0,0,-6">
+            <Viewbox Margin="0,3,-1,0">
+                <ContentPresenter x:Name="BarcodeImage" Content="" ContentTemplate="{StaticResource BarcodeTemplate}" Margin="2.5" RenderTransformOrigin="0.476,0.476"/>
+            </Viewbox>
+            <Image x:Name="EmbiggenBarcode" Source="Expand-76.png" Stretch="Fill" Width="22" Height="22" MouseUp="EmbiggenBarcode_Up" TouchUp="EmbiggenBarcode_Up" StylusUp="EmbiggenBarcode_Up" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,3,3,0"/>
+        </Grid>
     </Grid>
 </Window>
