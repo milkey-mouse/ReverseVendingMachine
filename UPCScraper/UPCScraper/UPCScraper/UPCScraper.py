@@ -2,6 +2,7 @@ from lxml import etree
 from lxml import html
 import threading
 import requests
+import shutil
 import lxml
 import glob
 import csv
@@ -26,7 +27,7 @@ def download_all(url):
     name = name.replace("-", "_") #all_the_cool_kids_use_underscores
     with open(name + ".csv", "w") as prodfile:
         csvfile = csv.writer(prodfile)
-        csvfile.writerow(("Name","UPC","Category","SubCat1","SubCat2","Manufacturer","URL"))
+        csvfile.writerow(("Name","UPC","Category","SubCat1","SubCat2","Manufacturer","URL","Ingredients"))
         pagenum = 1
         while True:
             try:
@@ -37,30 +38,45 @@ def download_all(url):
                     try:
                         el_name = element[1][0][0].text_content()
                     except:
-                        pass
+                        el_name = ""
                     try:
                         el_url = element[1][0][0].get("href")
                     except:
-                        pass
+                        el_url = ""
                     try:
                         el_upc = el_url[-13:-1] #grab the 12 digits of the UPC code without grabbing the slash at the end
                     except:
-                        pass
+                        el_upc = ""
                     try:
                         el_cat2 = element[3][0][0].text_content()
                     except:
-                        pass
+                        el_cat2 = ""
                     try:
                         el_cat3 = element[5][0][0].text_content()
                     except:
-                        pass
+                        el_cat3 = ""
                     try:
                         el_manufacturer = element[7][0][0].text_content()
+                    except:
+                        el_manufacturer = ""
+                    el_ingredients = ""
+                    try:
+                        ingredients = []
+                        r2 = requests.get(el_url)
+                        itempage = lxml.html.fromstring(r2.text)
+                        for ingredient in itempage.find_class("blockNorm fontNorm")[0]:
+                            try:
+                                ing = ingredient.get("title")
+                                if ing != None:
+                                    ingredients.append(ing)
+                            except:
+                                pass
+                        el_ingredients = ";".join(ingredients)
                     except:
                         pass
                     try:
                         print el_name
-                        csvfile.writerow((el_name,el_upc,el_cat1,el_cat2,el_cat3,el_manufacturer,el_url))
+                        csvfile.writerow((el_name,el_upc,el_cat1,el_cat2,el_cat3,el_manufacturer,el_url,el_ingredients))
                     except:
                         pass
                 nextButton = False
@@ -98,7 +114,7 @@ print "Combining outputs..."
 
 with open("all_products.csv", "w") as prodfile:
     csvfile = csv.writer(prodfile)
-    csvfile.writerow(("Name","UPC","Category","SubCat1","SubCat2","Manufacturer","URL"))
+    csvfile.writerow(("Name","UPC","Category","SubCat1","SubCat2","Manufacturer","URL","Ingredients"))
     for subfile in glob.glob("*.csv"):
         if subfile == "all_products.csv":
             continue
@@ -110,5 +126,3 @@ with open("all_products.csv", "w") as prodfile:
                     first = True
                     continue
                 csvfile.writerow(row)
-
-os.system("all_products.csv")
