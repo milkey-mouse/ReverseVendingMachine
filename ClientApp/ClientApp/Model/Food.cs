@@ -14,6 +14,8 @@ namespace ClientApp.Model
         public string Manufacturer { get; set; }
         public string URL { get; set; }
         public string UPC { get; set; }
+        public string[] IngredientsArray;
+        public string Ingredients { set { IngredientsArray = value.Split(";".ToCharArray());} }
         public bool Allowed = true;
     }
 }

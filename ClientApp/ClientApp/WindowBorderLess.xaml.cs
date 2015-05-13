@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -453,7 +454,9 @@ namespace BorderLess
                     FoodData.Foods.Add(food);
                 }
                 return FoodData;
-            }).ContinueWith((i) => { FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; }, Scheduler);
+            }).ContinueWith((i) =>
+            {
+                FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; Process.Start(Application.ResourceAssembly.Location); Application.Current.Shutdown(); }, Scheduler);
         }
 
         //shut up this is a great idea
