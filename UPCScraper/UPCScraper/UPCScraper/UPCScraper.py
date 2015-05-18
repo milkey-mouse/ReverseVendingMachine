@@ -44,7 +44,7 @@ def download_all(url):
                     except:
                         el_url = ""
                     try:
-                        el_upc = el_url[-13:-1] #grab the 12 digits of the UPC code without grabbing the slash at the end
+                        el_upc = el_url[el_url.rfind("/upc-")+5:-1] #grab the 12 digits of the UPC code without grabbing the slash at the end
                     except:
                         el_upc = ""
                     try:
