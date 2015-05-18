@@ -15,8 +15,15 @@ categories = []
 r = requests.get("http://www.upcfoodsearch.com/products/")
 cattree = lxml.html.fromstring(r.text)
 
+denied = ["baby_food", "baking_supplies", "cooking_supplies", "pet_food", "vitamins_and_supplements"]
+
 for element in cattree.find_class("click1"):
-    categories.append(element.get("href"))
+    name = element.get("href")
+    name = name[:-1]
+    name = name[name.rfind("/") + 1:]
+    name = name.replace("-", "_") #all_the_cool_kids_use_underscores
+    if not name in denied:
+        categories.append(element.get("href"))
 
 print "Spawning threads..."
 
@@ -91,6 +98,7 @@ def download_all(url):
                 nextButton = True
             finally:
                 if nextButton == False:
+                    print "Quitting thread " + url
                     break
                 else:
                     pagenum += 20
