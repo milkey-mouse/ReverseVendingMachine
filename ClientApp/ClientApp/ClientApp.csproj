@@ -137,6 +137,14 @@
     <Resource Include="loading.gif" />
     <Resource Include="Expand-76.png" />
     <Resource Include="Retract-76.png" />
+    <Resource Include="Info-17.png" />
+    <Resource Include="DialogClose-24.png" />
+    <Resource Include="Minus-64.png" />
+    <Resource Include="Plus-64.png" />
+    <Resource Include="OR-64.png" />
+    <Resource Include="Milkey.png" />
+    <Resource Include="logonaut.png" />
+    <Resource Include="Icons8_Cup-100.png" />
     <Content Include="Resource\Microsoft.Windows.Shell.dll" />
     <Resource Include="Todo.txt" />
   </ItemGroup>

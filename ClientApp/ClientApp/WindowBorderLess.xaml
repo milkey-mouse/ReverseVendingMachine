@@ -8,6 +8,29 @@
         Style="{DynamicResource MainWindowStyle}"
         d:DataContext="{d:DesignData Source=/SampleData/FoodSource.xaml}" WindowStyle="None">
     <Window.Resources>
+        <Style x:Key="NoChromeButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="Chrome" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#ADADAD"/>
+                                <Setter Property="Opacity" TargetName="Chrome" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <local:BarcodeConverter x:Key="barcodeConverter"/>
         <ItemsPanelTemplate x:Key="HorizontalPanel">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
@@ -66,20 +89,60 @@
         <Grid HorizontalAlignment="Left" Height="100" Margin="508,-73,0,0" VerticalAlignment="Top" Width="100"/>
         <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,546" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
         <Label x:Name="SearchLabel" Content="Search" HorizontalAlignment="Left" Margin="965,15,0,0" VerticalAlignment="Top" Height="23" FontStyle="Italic" Foreground="#FF7F7F7F" MouseDown="SearchLabelMouseDown" StylusDown="SearchLabel_StylusDown" TouchDown="SearchLabel_TouchDown"/>
+        <CheckBox x:Name="IngredientsBox" Content="Ingredients" HorizontalAlignment="Left" Margin="965,63,0,0" VerticalAlignment="Top" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
         <CheckBox x:Name="ManufacturerBox" Content="Manufacturer" HorizontalAlignment="Left" Margin="965,43,0,0" VerticalAlignment="Top" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
-        <CheckBox x:Name="CategoryBox" Content="Category" HorizontalAlignment="Left" Margin="965,63,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
-        <CheckBox x:Name="NameBox" Content="Name" HorizontalAlignment="Left" Margin="965,83,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
-        <CheckBox x:Name="UPCBox" Content="UPC" HorizontalAlignment="Left" Margin="965,103,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
+        <CheckBox x:Name="CategoryBox" Content="Category" HorizontalAlignment="Left" Margin="965,83,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
+        <CheckBox x:Name="NameBox" Content="Name" HorizontalAlignment="Left" Margin="965,103,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
+        <CheckBox x:Name="UPCBox" Content="UPC" HorizontalAlignment="Left" Margin="965,123,0,0" VerticalAlignment="Top" IsChecked="True" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
         <Label x:Name="ItemCount" Content="0 items selected" HorizontalAlignment="Left" Margin="965,565,0,0" VerticalAlignment="Top" Height="25" Foreground="#FF7F7F7F"/>
-        <Separator HorizontalAlignment="Left" Height="3" Margin="965,125,0,0" VerticalAlignment="Top" Width="213"/>
-        <Button x:Name="DBUpdate" Content="Update Database" HorizontalAlignment="Left" Margin="965,133,0,0" VerticalAlignment="Top" Width="213" Background="#3F2ECC71" BorderBrush="#FF2ECC71" Click="DBUpdate_Click"/>
-        <!-- <Button x:Name="DBUpdate_Copy" Content="Redownload Database" HorizontalAlignment="Left" Margin="965,158,0,0" VerticalAlignment="Top" Width="213" Background="#3F00FFFF" BorderBrush="Cyan"/> -->
-        <Grid x:Name="BarcodeSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" MouseUp="EmbiggenBarcode_Up" Visibility="Hidden"/>
+        <Separator HorizontalAlignment="Left" Height="3" Margin="965,145,0,0" VerticalAlignment="Top" Width="213"/>
+        <Button x:Name="DBUpdate" Content="Update Database" HorizontalAlignment="Left" Margin="965,153,0,0" VerticalAlignment="Top" Width="213" Background="#3F2ECC71" BorderBrush="#FF2ECC71" Click="DBUpdate_Click"/>
+        <ListBox x:Name="IngredientsView" HorizontalAlignment="Left" Height="376" Margin="965,189,0,0" VerticalAlignment="Top" Width="213" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Viewbox Height="20" Width="195" StretchDirection="Both" Stretch="Uniform" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    </Viewbox>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Separator HorizontalAlignment="Left" Height="3" Margin="965,179,0,0" VerticalAlignment="Top" Width="213"/>
+        <Button x:Name="InfoButton" HorizontalAlignment="Left"  Style="{DynamicResource NoChromeButton}" Margin="1161,43,0,0" VerticalAlignment="Top" Width="17" Height="17" Click="InfoButton_Click">
+            <Image Source="Info-17.png" Stretch="Fill"/>
+        </Button>
+        <Grid x:Name="BarcodeSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" Visibility="Hidden" MouseUp="EmbiggenBarcode_Up"/>
         <Grid x:Name="Barcode" HorizontalAlignment="Left" Height="100" VerticalAlignment="Bottom" Width="266" Background="White" Margin="-6,0,0,-6">
             <Viewbox Margin="0,3,-1,0">
                 <ContentPresenter x:Name="BarcodeImage" Content="" ContentTemplate="{StaticResource BarcodeTemplate}" Margin="2.5" RenderTransformOrigin="0.476,0.476"/>
             </Viewbox>
             <Image x:Name="EmbiggenBarcode" Source="Expand-76.png" Stretch="Fill" Width="22" Height="22" MouseUp="EmbiggenBarcode_Up" TouchUp="EmbiggenBarcode_Up" StylusUp="EmbiggenBarcode_Up" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,3,3,0"/>
+        </Grid>
+        <Grid x:Name="HelpSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" Visibility="Hidden" MouseUp="HelpDialogClose_Click"/>
+        <Grid x:Name="HelpDialog" HorizontalAlignment="Left" Height="300" Margin="350,-500,0,163" VerticalAlignment="Top" Width="500" Background="White">
+            <Button x:Name="HelpDialogClose" Style="{DynamicResource NoChromeButton}" Margin="480,5,5,0" VerticalAlignment="Top" Height="15" Click="HelpDialogClose_Click">
+                <Image Source="DialogClose-24.png" Stretch="Fill"/>
+            </Button>
+            <Label Content="Search Operators" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semibold"/>
+            <Separator HorizontalAlignment="Left" Height="5" Margin="17,40,0,0" VerticalAlignment="Top" Width="470"/>
+            <Image Margin="17,55,443,205" Source="Minus-64.png" Stretch="Fill"/>
+            <Image Margin="165,55,292,205" Source="Plus-64.png" Stretch="Fill" Width="40" Height="40"/>
+            <Label Content="NOT Operator" HorizontalAlignment="Left" Margin="57,60,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semilight" Height="31"/>
+            <TextBlock HorizontalAlignment="Left" Margin="17,100,0,0" TextWrapping="Wrap" Text="The NOT Operator will remove all results containing the following word. For instance, searching &quot;doritos -spicy&quot; will return all that match &quot;doritos&quot; but don't match &quot;spicy&quot;." VerticalAlignment="Top" Height="103" Width="148" FontSize="11"/>
+            <Label Content="AND Operator" HorizontalAlignment="Left" Margin="208,60,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semilight" Height="31" Width="120"/>
+            <TextBlock HorizontalAlignment="Left" Margin="162,96,0,0" TextWrapping="Wrap" Text="The AND Operator will ensure every result contains *every* word in the search term. For example, &quot;+doritos tacos&quot; will not show both &quot;doritos&quot; and &quot;tacos&quot; organized by relevance, only those that match &quot;doritos tacos&quot;." VerticalAlignment="Top" Height="117" Width="163" FontSize="11"/>
+            <Image Margin="331,55,129,205" Source="OR-64.png" Stretch="Fill"/>
+            <Label Content="OR Operator" HorizontalAlignment="Left" Margin="371,60,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semilight" Height="31"/>
+            <TextBlock HorizontalAlignment="Left" Margin="331,100,0,0" TextWrapping="Wrap" Text="The OR Operator is the default used while searching. It matches anything containing any of the words searched for and sorts by relevance." VerticalAlignment="Top" Height="100" Width="148" FontSize="11"/>
+            <Label Content="Credits" HorizontalAlignment="Left" Margin="10,204,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semibold"/>
+            <Separator HorizontalAlignment="Left" Height="5" Margin="17,234,0,0" VerticalAlignment="Top" Width="470"/>
+            <Label Content="Project by Milkey Mouse" HorizontalAlignment="Left" Margin="64,244,0,0" VerticalAlignment="Top"/>
+            <Label Content="for the Hackaday Prize" HorizontalAlignment="Left" Margin="70,268,0,0" VerticalAlignment="Top"/>
+            <Label Content="Icons by Icons8" HorizontalAlignment="Left" Margin="293,240,0,0" VerticalAlignment="Top"/>
+            <Label Content="UPC data from" HorizontalAlignment="Left" Margin="298,260,0,0" VerticalAlignment="Top" FontSize="11"/>
+            <Image Margin="17,246,439,10" Source="Milkey.png" Stretch="UniformToFill"/>
+            <Image Margin="217,246,239,10" Source="logonaut.png" Stretch="UniformToFill"/>
+            <Image Margin="420,246,36,10" Source="Icons8_Cup-100.png" Stretch="UniformToFill"/>
+            <Label Content="UPC Food Search" HorizontalAlignment="Left" Margin="293,273,0,0" VerticalAlignment="Top" FontSize="11"/>
         </Grid>
     </Grid>
 </Window>

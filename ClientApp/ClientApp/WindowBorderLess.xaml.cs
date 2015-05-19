@@ -45,6 +45,8 @@ namespace BorderLess
 
         Thickness BarcodeMargin = new Thickness();
 
+        Duration AnimationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+
         public WindowBorderLess()
         {
             InitializeComponent();
@@ -135,6 +137,10 @@ namespace BorderLess
                 if(ManufacturerBox.IsChecked == true)
                 {
                     searchprops.Add(food.Manufacturer);
+                }
+                if (IngredientsBox.IsChecked == true)
+                {
+                    searchprops.Add(string.Join(" ", food.IngredientsArray));
                 }
                 if (CategoryBox.IsChecked == true)
                 {
@@ -397,6 +403,7 @@ namespace BorderLess
                 ClientApp.Model.Food foodItem = (ClientApp.Model.Food)FoodsView.SelectedItem;
                 ItemName.Text = foodItem.Name;
                 BarcodeImage.Content = foodItem.UPC;
+                IngredientsView.ItemsSource = foodItem.IngredientsArray;
             }
             else
             {
@@ -478,6 +485,10 @@ namespace BorderLess
 
         private void EmbiggenBarcode_Up(object sender, EventArgs e)
         {
+            if (EmbiggenBarcode.IsEnabled == false)
+            {
+                return;
+            }
             EmbiggenBarcode.IsEnabled = false;
             if(BarcodeEmbiggened)
             {
@@ -522,22 +533,21 @@ namespace BorderLess
                 PowerEase pe = new PowerEase();
                 pe.Power = 2.5;
                 Size bigSize = new Size(Barcode.Width * 2.25, Barcode.Height * 3);
-                Duration animationDuration = new Duration(TimeSpan.FromSeconds(0.5));
                 DoubleAnimation dw = new DoubleAnimation();
                 dw.EasingFunction = pe;
                 dw.From = Barcode.Width;
                 dw.To = bigSize.Width;
-                dw.Duration = animationDuration;
+                dw.Duration = AnimationDuration;
                 DoubleAnimation dh = new DoubleAnimation();
                 dh.EasingFunction = pe;
                 dh.From = Barcode.Height;
                 dh.To = bigSize.Height;
-                dh.Duration = animationDuration;
+                dh.Duration = AnimationDuration;
                 ThicknessAnimation dm = new ThicknessAnimation();
                 dm.EasingFunction = pe;
                 dm.From = Barcode.Margin;
                 dm.To = new Thickness((this.Width - bigSize.Width) / 2, Barcode.Margin.Top, Barcode.Margin.Right, (this.Height - bigSize.Height) / 2);
-                dm.Duration = animationDuration;
+                dm.Duration = AnimationDuration;
                 ColorAnimation pc = new ColorAnimation();
                 pc.EasingFunction = pe;
                 Color blackFrom = Colors.Black;
@@ -545,7 +555,7 @@ namespace BorderLess
                 pc.From = blackFrom;
                 blackFrom.A = 153;
                 pc.To = blackFrom;
-                pc.Duration = animationDuration;
+                pc.Duration = AnimationDuration;
                 BarcodeSplash.Visibility = Visibility.Visible;
                 BarcodeSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
                 Barcode.BeginAnimation(Grid.HeightProperty, dh);
@@ -554,6 +564,58 @@ namespace BorderLess
             }
             DelayCall(510, new Action(() => { EmbiggenBarcode.IsEnabled = true; }));
             BarcodeEmbiggened = !BarcodeEmbiggened;
+        }
+
+        private void InfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            InfoButton.IsEnabled = false;
+            HelpDialogClose.IsEnabled = true;
+            PowerEase pe = new PowerEase();
+            pe.Power = 2.5;
+            ThicknessAnimation dm = new ThicknessAnimation();
+            dm.EasingFunction = pe;
+            dm.From = HelpDialog.Margin;
+            dm.To = new Thickness((this.Width - HelpDialog.Width) / 2, ((this.Height - HelpDialog.Height) / 2) - 20, Barcode.Margin.Right, Barcode.Margin.Bottom);
+            dm.Duration = AnimationDuration;
+            ColorAnimation pc = new ColorAnimation();
+            pc.EasingFunction = pe;
+            Color blackFrom = Colors.Black;
+            blackFrom.A = 0;
+            pc.From = blackFrom;
+            blackFrom.A = 153;
+            pc.To = blackFrom;
+            pc.Duration = AnimationDuration;
+            HelpSplash.Visibility = Visibility.Visible;
+            HelpDialog.BeginAnimation(Grid.MarginProperty, dm);
+            HelpSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
+        }
+
+        private void HelpDialogClose_Click(object sender, RoutedEventArgs e)
+        {
+            if (HelpDialogClose.IsEnabled == false)
+            {
+                return;
+            }
+            HelpDialogClose.IsEnabled = false;
+            PowerEase pe = new PowerEase();
+            pe.Power = 2.5;
+            ThicknessAnimation dm = new ThicknessAnimation();
+            dm.EasingFunction = pe;
+            dm.From = HelpDialog.Margin;
+            dm.To = new Thickness((this.Width - HelpDialog.Width) / 2, -500, Barcode.Margin.Right, Barcode.Margin.Bottom);
+            dm.Duration = AnimationDuration;
+            ColorAnimation pc = new ColorAnimation();
+            pc.EasingFunction = pe;
+            Color blackFrom = Colors.Black;
+            blackFrom.A = 153;
+            pc.From = blackFrom;
+            blackFrom.A = 0;
+            pc.To = blackFrom;
+            pc.Duration = AnimationDuration;
+            HelpSplash.Visibility = Visibility.Visible;
+            HelpDialog.BeginAnimation(Grid.MarginProperty, dm);
+            HelpSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
+            DelayCall(500, new Action(() => { InfoButton.IsEnabled = true; HelpSplash.Visibility = Visibility.Hidden; }));
         }
     }
 }
