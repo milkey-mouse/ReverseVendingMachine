@@ -74,7 +74,7 @@ def download_all(url):
                         for ingredient in itempage.find_class("blockNorm fontNorm")[0]:
                             try:
                                 ing = ingredient.get("title")
-                                if ing != None:
+                                if ing != None and ing != "Organic": #i dunno why this slips through, but it does
                                     ingredients.append(ing)
                             except:
                                 pass
