@@ -9,11 +9,31 @@
             Provides a way to pause, resume or seek a GIF animation.
             </summary>
         </member>
+        <member name="P:WpfAnimatedGif.ImageAnimationController.FrameCount">
+            <summary>
+            Returns the number of frames in the image.
+            </summary>
+        </member>
+        <member name="P:WpfAnimatedGif.ImageAnimationController.IsPaused">
+            <summary>
+            Returns a value that indicates whether the animation is paused.
+            </summary>
+        </member>
+        <member name="P:WpfAnimatedGif.ImageAnimationController.IsComplete">
+            <summary>
+            Returns a value that indicates whether the animation is complete.
+            </summary>
+        </member>
         <member name="M:WpfAnimatedGif.ImageAnimationController.GotoFrame(System.Int32)">
             <summary>
             Seeks the animation to the specified frame index.
             </summary>
             <param name="index">The index of the frame to seek to</param>
+        </member>
+        <member name="P:WpfAnimatedGif.ImageAnimationController.CurrentFrame">
+            <summary>
+            Returns the current frame index.
+            </summary>
         </member>
         <member name="M:WpfAnimatedGif.ImageAnimationController.Pause">
             <summary>
@@ -23,6 +43,11 @@
         <member name="M:WpfAnimatedGif.ImageAnimationController.Play">
             <summary>
             Starts or resumes the animation. If the animation is complete, it restarts from the beginning.
+            </summary>
+        </member>
+        <member name="E:WpfAnimatedGif.ImageAnimationController.CurrentFrameChanged">
+            <summary>
+            Raised when the current frame changes.
             </summary>
         </member>
         <member name="M:WpfAnimatedGif.ImageAnimationController.Finalize">
@@ -40,31 +65,6 @@
             Disposes the current object
             </summary>
             <param name="disposing">true to dispose both managed an unmanaged resources, false to dispose only managed resources</param>
-        </member>
-        <member name="P:WpfAnimatedGif.ImageAnimationController.FrameCount">
-            <summary>
-            Returns the number of frames in the image.
-            </summary>
-        </member>
-        <member name="P:WpfAnimatedGif.ImageAnimationController.IsPaused">
-            <summary>
-            Returns a value that indicates whether the animation is paused.
-            </summary>
-        </member>
-        <member name="P:WpfAnimatedGif.ImageAnimationController.IsComplete">
-            <summary>
-            Returns a value that indicates whether the animation is complete.
-            </summary>
-        </member>
-        <member name="P:WpfAnimatedGif.ImageAnimationController.CurrentFrame">
-            <summary>
-            Returns the current frame index.
-            </summary>
-        </member>
-        <member name="E:WpfAnimatedGif.ImageAnimationController.CurrentFrameChanged">
-            <summary>
-            Raised when the current frame changes.
-            </summary>
         </member>
         <member name="T:WpfAnimatedGif.ImageBehavior">
             <summary>

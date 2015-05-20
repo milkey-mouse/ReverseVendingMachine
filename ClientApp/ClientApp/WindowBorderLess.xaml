@@ -97,7 +97,7 @@
         <Label x:Name="ItemCount" Content="0 items selected" HorizontalAlignment="Left" Margin="965,565,0,0" VerticalAlignment="Top" Height="25" Foreground="#FF7F7F7F"/>
         <Separator HorizontalAlignment="Left" Height="3" Margin="965,145,0,0" VerticalAlignment="Top" Width="213"/>
         <Button x:Name="DBUpdate" Content="Update Database" HorizontalAlignment="Left" Margin="965,153,0,0" VerticalAlignment="Top" Width="213" Background="#3F2ECC71" BorderBrush="#FF2ECC71" Click="DBUpdate_Click"/>
-        <ListBox x:Name="IngredientsView" HorizontalAlignment="Left" Height="376" Margin="965,189,0,0" VerticalAlignment="Top" Width="213" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+        <ListBox x:Name="IngredientsView" HorizontalAlignment="Left" Height="350" Margin="965,216,0,0" VerticalAlignment="Top" Width="213" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Viewbox Height="20" Width="195" StretchDirection="Both" Stretch="Uniform" HorizontalAlignment="Left">
@@ -106,6 +106,12 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <Grid x:Name="NoIngredientsGrid" Margin="965,216,10,17" Width="211" Height="348" Background="White">
+            <Image Margin="10,27,10,130" Source="Not_Found-100.png" Stretch="None"/>
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" Margin="10,196,0,125" FontSize="18" IsHyphenationEnabled="True" Height="29" Width="193" TextAlignment="Center" Text="No Ingredient Data"/>
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Semilight" Margin="10,222,0,88" IsHyphenationEnabled="True" Height="40" Width="193" TextAlignment="Center" Text="We don't have any data for this item. Delete all items with no ingredients?"/>
+            <Button x:Name="DeleteNoIngredients" Content="Delete Items" Height="20" VerticalAlignment="Bottom" Margin="50,0,50,60" Click="DeleteNoIngredients_Click"/>
+        </Grid>
         <Separator HorizontalAlignment="Left" Height="3" Margin="965,179,0,0" VerticalAlignment="Top" Width="213"/>
         <Button x:Name="InfoButton" HorizontalAlignment="Left"  Style="{DynamicResource NoChromeButton}" Margin="1161,43,0,0" VerticalAlignment="Top" Width="17" Height="17" Click="InfoButton_Click">
             <Image Source="Info-17.png" Stretch="Fill"/>
@@ -144,5 +150,6 @@
             <Image Margin="420,246,36,10" Source="Icons8_Cup-100.png" Stretch="UniformToFill"/>
             <Label Content="UPC Food Search" HorizontalAlignment="Left" Margin="293,273,0,0" VerticalAlignment="Top" FontSize="11"/>
         </Grid>
+        <TextBlock x:Name="BarcodeLabel_Copy" TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="965,187,0,372" FontSize="18" IsHyphenationEnabled="True" Height="24"><Run Text="Ingredients"/><LineBreak/><Run/></TextBlock>
     </Grid>
 </Window>

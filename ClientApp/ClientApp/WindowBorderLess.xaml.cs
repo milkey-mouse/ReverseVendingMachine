@@ -404,11 +404,21 @@ namespace BorderLess
                 ItemName.Text = foodItem.Name;
                 BarcodeImage.Content = foodItem.UPC;
                 IngredientsView.ItemsSource = foodItem.IngredientsArray;
+                if(foodItem.Ingredients != "")
+                {
+                    NoIngredientsGrid.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    NoIngredientsGrid.Visibility = Visibility.Visible;
+                }
             }
             else
             {
                 ItemCount.Content = FoodsView.SelectedItems.Count + " items selected";
                 BarcodeImage.Content = "";
+                NoIngredientsGrid.Visibility = Visibility.Hidden;
+                IngredientsView.ItemsSource = null;
                 if(FoodsView.SelectedItems.Count == 0)
                 {
                     ItemName.Text = "No item selected";
@@ -616,6 +626,15 @@ namespace BorderLess
             HelpDialog.BeginAnimation(Grid.MarginProperty, dm);
             HelpSplash.Background.BeginAnimation(SolidColorBrush.ColorProperty, pc);
             DelayCall(500, new Action(() => { InfoButton.IsEnabled = true; HelpSplash.Visibility = Visibility.Hidden; }));
+        }
+
+
+        //TODO: thread this maybe? using Task
+        private void DeleteNoIngredients_Click(object sender, RoutedEventArgs e)
+        {
+            FoodData.Foods = new ObservableCollection<Food>(FoodData.Foods.Where(food => food.Ingredients != ""));
+            Reindex();
+            UpdateSearch();
         }
     }
 }
