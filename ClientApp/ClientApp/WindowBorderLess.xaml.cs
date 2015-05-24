@@ -33,9 +33,15 @@ namespace BorderLess
 
         ClientApp.Model.FoodSource FoodData = new ClientApp.Model.FoodSource();
 
+        ObservableCollection<Food> NoIngredientsFoodData = new ObservableCollection<Food>();
+
+        ObservableCollection<Food> WithIngredientsFoodData = new ObservableCollection<Food>();
+
         public Dictionary<String, List<ClientApp.Model.Food>> FoodCache = new Dictionary<String, List<ClientApp.Model.Food>>();
 
         public bool CacheBuilt = false;
+
+        public bool RemoveNoIngredients = false;
 
         private Task LoadTask = null;
 
@@ -46,6 +52,7 @@ namespace BorderLess
         Thickness BarcodeMargin = new Thickness();
 
         Duration AnimationDuration = new Duration(TimeSpan.FromSeconds(0.5));
+
 
         public WindowBorderLess()
         {
@@ -109,7 +116,21 @@ namespace BorderLess
                         FoodData.Foods.Add(food);
                     }
                     return FoodData;
-                }).ContinueWith((i) => { FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; }, Scheduler);
+                }).ContinueWith((i) => {
+                    FoodData = i.Result;
+                    DataContext = i.Result;
+                    FoodsView.ItemsSource = i.Result.Foods;
+                    WithIngredientsFoodData = i.Result.Foods;
+                    Task.Factory.StartNew<ObservableCollection<Food>>((x) =>
+                    {
+                        return new ObservableCollection<Food>(FoodData.Foods.Where(food => food.Ingredients != ""));
+                    }, Scheduler).ContinueWith((y) =>
+                    {
+                        NoIngredientsFoodData = y.Result;
+                        LoadingSplash.Visibility = Visibility.Hidden;
+                        CacheBuilt = true;
+                    });
+                }, Scheduler);
         }
 
         string StripPunctuation(string s)
@@ -180,6 +201,7 @@ namespace BorderLess
                 DownloadAll(false, false);
             }
             var csv = new CsvReader(File.OpenText(AppDataPath + "products.csv"));
+            csv.Configuration.WillThrowOnMissingField = false;
             var records = csv.GetRecords<Food>(); //map the csv to the foods
             return records;
         }
@@ -433,7 +455,7 @@ namespace BorderLess
         private void DBUpdate_Click(object sender, RoutedEventArgs e)
         {
             LoadingSplash.Visibility = Visibility.Visible;
-            LoadTask = Task.Factory.StartNew<ClientApp.Model.FoodSource>(() =>
+            LoadTask = Task.Factory.StartNew(() =>
             {
                 FoodData.Foods = new ObservableCollection<ClientApp.Model.Food>();
                 List<ClientApp.Model.Food> tempFoods = new List<ClientApp.Model.Food>();
@@ -444,36 +466,9 @@ namespace BorderLess
                     System.IO.File.Delete(AppDataPath + "new_products.csv");
                 }
                 System.IO.File.WriteAllText(AppDataPath + "new_products.csv", fileString);
-                StringReader stream = new StringReader(fileString);
-                var csv = new CsvReader(stream);
-                var records = csv.GetRecords<Food>(); //map the csv to the foods
-                foreach (var food in records)
-                {
-                    string[] searchprops = { food.Category, food.SubCat1, food.SubCat2, food.Name, food.UPC };
-                    foreach (var word in string.Join(" ", searchprops).Split())
-                    {
-                        string target = StripPunctuation(word.ToLower());
-                        if (FoodCache.ContainsKey(target) == false)
-                        {
-                            FoodCache.Add(target, new List<ClientApp.Model.Food>());
-                        }
-                        FoodCache[target].Add(food);
-                    }
-                    string[] foodpath = { food.Category, food.SubCat1, food.SubCat2, "" }; //the empty string is for the final slash
-                    food.Category = string.Join("/", foodpath);
-                    tempFoods.Add(food);
-                }
-                var foods = from food in tempFoods
-                            orderby food.Name ascending
-                            select food;
-                foreach (ClientApp.Model.Food food in foods)
-                {
-                    FoodData.Foods.Add(food);
-                }
-                return FoodData;
             }).ContinueWith((i) =>
             {
-                FoodData = i.Result; DataContext = i.Result; FoodsView.ItemsSource = i.Result.Foods; LoadingSplash.Visibility = Visibility.Hidden; CacheBuilt = true; Process.Start(Application.ResourceAssembly.Location); Application.Current.Shutdown(); }, Scheduler);
+                Process.Start(Application.ResourceAssembly.Location); Application.Current.Shutdown(); }, Scheduler);
         }
 
         //shut up this is a great idea
@@ -628,11 +623,21 @@ namespace BorderLess
             DelayCall(500, new Action(() => { InfoButton.IsEnabled = true; HelpSplash.Visibility = Visibility.Hidden; }));
         }
 
-
-        //TODO: thread this maybe? using Task
-        private void DeleteNoIngredients_Click(object sender, RoutedEventArgs e)
+        private void ToggleHideIngredients(object sender, EventArgs e)
         {
-            FoodData.Foods = new ObservableCollection<Food>(FoodData.Foods.Where(food => food.Ingredients != ""));
+            RemoveNoIngredients = !RemoveNoIngredients;
+            if (RemoveNoIngredients == true)
+            {
+                FoodsCheckPic.Source = new BitmapImage(new Uri("Ingredients-27.png", UriKind.Relative));
+                FoodData.Foods = NoIngredientsFoodData;
+                FoodsView.ItemsSource = FoodData.Foods;
+            }
+            else
+            {
+                FoodsCheckPic.Source = new BitmapImage(new Uri("No_Ingredients-27.png", UriKind.Relative));
+                FoodData.Foods = WithIngredientsFoodData;
+                FoodsView.ItemsSource = FoodData.Foods;
+            }
             Reindex();
             UpdateSearch();
         }

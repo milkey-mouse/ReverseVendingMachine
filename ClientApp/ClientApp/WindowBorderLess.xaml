@@ -6,7 +6,7 @@
         xmlns:gif="http://wpfanimatedgif.codeplex.com"    
         Title="MainWindow" Height="625" Width="1200" ResizeMode="NoResize" 
         Style="{DynamicResource MainWindowStyle}"
-        d:DataContext="{d:DesignData Source=/SampleData/FoodSource.xaml}" WindowStyle="None">
+        d:DataContext="{d:DesignData Source=/SampleData/FoodSource.xaml}" WindowStyle="None" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="NoChromeButton" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Transparent"/>
@@ -32,6 +32,9 @@
             </Setter>
         </Style>
         <local:BarcodeConverter x:Key="barcodeConverter"/>
+        <local:PlusVisibliltyConverter x:Key="PlusVisibliltyConverter"/>
+        <local:PlusColorConverter x:Key="PlusColorConverter"/>
+        <local:NegateColorConverter x:Key="NegateColorConverter"/>
         <ItemsPanelTemplate x:Key="HorizontalPanel">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
         </ItemsPanelTemplate>
@@ -75,18 +78,28 @@
             <ListBox x:Name="FoodsView" ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="586" Margin="266,0,-700,-9.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" SelectionMode="Extended" SelectionChanged="FoodsView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Viewbox Height="45" Width="675" StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,-5,0">
-                            <StackPanel Margin="-1,-1,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Label Content="{Binding Category}" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,6" VerticalAlignment="Center" />
-                                <Label Content="{Binding Name}" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,0,0,0" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Viewbox>
+                        <StackPanel Orientation="Horizontal">
+                            <Viewbox Height="45" Width="636" StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,-5,0">
+                                <StackPanel Margin="-1,-1,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Label Content="{Binding Category}" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,6" VerticalAlignment="Center" />
+                                    <Label Content="{Binding Name}" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Viewbox>
+                            <Grid Height="32" Width="32" Margin="2,0,0,0" RenderTransformOrigin="0.515,0.515">
+                                <Grid.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="{Binding Allowed, Converter={StaticResource PlusVisibliltyConverter}, Mode=OneTime}"/>
+                                    </TransformGroup>
+                                </Grid.RenderTransform>
+                                <Image Source="Green_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource NegateColorConverter}, Mode=OneTime}"/>
+                                <Image Source="Red_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource PlusColorConverter}, Mode=OneTime}"/>
+                            </Grid>
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
             <TextBlock x:Name="BarcodeLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Barcode" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,457,0,106" FontSize="18" IsHyphenationEnabled="True"/>
         </Grid>
-        <Grid HorizontalAlignment="Left" Height="100" Margin="508,-73,0,0" VerticalAlignment="Top" Width="100"/>
         <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,546" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
         <Label x:Name="SearchLabel" Content="Search" HorizontalAlignment="Left" Margin="965,15,0,0" VerticalAlignment="Top" Height="23" FontStyle="Italic" Foreground="#FF7F7F7F" MouseDown="SearchLabelMouseDown" StylusDown="SearchLabel_StylusDown" TouchDown="SearchLabel_TouchDown"/>
         <CheckBox x:Name="IngredientsBox" Content="Ingredients" HorizontalAlignment="Left" Margin="965,63,0,0" VerticalAlignment="Top" Checked="PropertyChecked" Unchecked="PropertyChecked"/>
@@ -106,15 +119,19 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid x:Name="NoIngredientsGrid" Margin="965,216,10,17" Width="211" Height="348" Background="White">
+        <Grid x:Name="NoIngredientsGrid" Margin="965,216,10,17" Width="211" Height="348" Background="White" Visibility="Hidden">
             <Image Margin="10,27,10,130" Source="Not_Found-100.png" Stretch="None"/>
             <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" Margin="10,196,0,125" FontSize="18" IsHyphenationEnabled="True" Height="29" Width="193" TextAlignment="Center" Text="No Ingredient Data"/>
-            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Semilight" Margin="10,222,0,88" IsHyphenationEnabled="True" Height="40" Width="193" TextAlignment="Center" Text="We don't have any data for this item. Delete all items with no ingredients?"/>
-            <Button x:Name="DeleteNoIngredients" Content="Delete Items" Height="20" VerticalAlignment="Bottom" Margin="50,0,50,60" Click="DeleteNoIngredients_Click"/>
+            <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Semilight" Margin="10,222,0,88" IsHyphenationEnabled="True" Height="40" Width="193" TextAlignment="Center" Text="We don't have any data for this item. Hide all items with no ingredients?"/>
+            <Button x:Name="DeleteNoIngredients" Content="Hide Items" Height="20" VerticalAlignment="Bottom" Margin="50,0,50,60" Click="ToggleHideIngredients"/>
         </Grid>
         <Separator HorizontalAlignment="Left" Height="3" Margin="965,179,0,0" VerticalAlignment="Top" Width="213"/>
         <Button x:Name="InfoButton" HorizontalAlignment="Left"  Style="{DynamicResource NoChromeButton}" Margin="1161,43,0,0" VerticalAlignment="Top" Width="17" Height="17" Click="InfoButton_Click">
             <Image Source="Info-17.png" Stretch="Fill"/>
+        </Button>
+        <TextBlock x:Name="IngredientsLabel" TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="965,187,0,372" FontSize="18" IsHyphenationEnabled="True" Height="24"><Run Text="Ingredients"/><LineBreak/><Run/></TextBlock>
+        <Button x:Name="FoodsCheck" Style="{DynamicResource NoChromeButton}" Margin="1150,185,11,0" VerticalAlignment="Top" Height="27" Width="27" Click="ToggleHideIngredients" ToolTip="Hide Items with No Ingredient Data">
+            <Image x:Name="FoodsCheckPic" Source="No_Ingredients-27.png" Stretch="Fill"/>
         </Button>
         <Grid x:Name="BarcodeSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" Visibility="Hidden" MouseUp="EmbiggenBarcode_Up"/>
         <Grid x:Name="Barcode" HorizontalAlignment="Left" Height="100" VerticalAlignment="Bottom" Width="266" Background="White" Margin="-6,0,0,-6">
@@ -150,6 +167,5 @@
             <Image Margin="420,246,36,10" Source="Icons8_Cup-100.png" Stretch="UniformToFill"/>
             <Label Content="UPC Food Search" HorizontalAlignment="Left" Margin="293,273,0,0" VerticalAlignment="Top" FontSize="11"/>
         </Grid>
-        <TextBlock x:Name="BarcodeLabel_Copy" TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="965,187,0,372" FontSize="18" IsHyphenationEnabled="True" Height="24"><Run Text="Ingredients"/><LineBreak/><Run/></TextBlock>
     </Grid>
 </Window>

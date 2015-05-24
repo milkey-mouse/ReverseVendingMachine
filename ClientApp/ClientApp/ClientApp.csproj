@@ -98,7 +98,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BarcodeConverter.cs" />
+    <Compile Include="Converters\NegateColorConverter.cs" />
+    <Compile Include="Converters\PlusColorConverter.cs" />
+    <Compile Include="Converters\PlusVisibilityConverter.cs" />
+    <Compile Include="Converters\BarcodeConverter.cs" />
     <Compile Include="Control\CaptionButtons.xaml.cs">
       <DependentUpon>CaptionButtons.xaml</DependentUpon>
     </Compile>
@@ -147,6 +150,10 @@
     <Resource Include="logonaut.png" />
     <Resource Include="Icons8_Cup-100.png" />
     <Resource Include="Not_Found-100.png" />
+    <Resource Include="Ingredients-27.png" />
+    <Resource Include="No_Ingredients-27.png" />
+    <Resource Include="Green_Plus-32.png" />
+    <Resource Include="Red_Plus-32.png" />
     <Content Include="Resource\Microsoft.Windows.Shell.dll" />
     <Resource Include="Todo.txt" />
   </ItemGroup>

@@ -7,6 +7,11 @@ namespace ClientApp.Model
 {
     public class Food
     {
+        public Food()
+        {
+            Allowed = true;
+        }
+       
         public string Name { get; set; }
         public string Category { get; set; }
         public string SubCat1 { get; set; }
@@ -17,6 +22,6 @@ namespace ClientApp.Model
         public string[] IngredientsArray;
         string IngredientsString = "";
         public string Ingredients { set { IngredientsArray = value.Split(";".ToCharArray()); IngredientsString = value; } get { return IngredientsString; } }
-        public bool Allowed = true;
+        public bool Allowed { get; set; }
     }
 }

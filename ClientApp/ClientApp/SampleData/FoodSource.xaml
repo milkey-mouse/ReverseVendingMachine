@@ -5,16 +5,22 @@
     <m:FoodSource.Title>Reverse Vending Machine - Derpton Middle School</m:FoodSource.Title>
     <m:FoodSource.Foods>
         <m:Food Category="Snacks/Chips &amp; Pretzels/Potato Chips/"
-                Name="Chaaaaaps" />
+                Name="Chaaaaaps"
+                Allowed="True" />
         <m:Food Category="Snacks/Chips &amp; Pretzels/Potato Chips/"
-                Name="Duhreeters" />
+                Name="Duhreeters"
+                Allowed="True" />
         <m:Food Category="Snacks/Chips &amp; Pretzels/Cheese Puffs/"
-                Name="Chietous" />
+                Name="Chietous"
+                Allowed="True" />
         <m:Food Category="Snacks/Chips &amp; Pretzels/Potato Chips/"
-                Name="1 Dollar Diabeetus" />
+                Name="1 Dollar Diabeetus"
+                Allowed="False" />
         <m:Food Category="Beverages/Soda Pop/Cola/"
-                Name="Liquid MLG" />
+                Name="Liquid MLG"
+                Allowed="True" />
         <m:Food Category="Stuff/Things/Other Things/Even More Things/"
-                Name="Item with a Reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaally Long Title" />
+                Name="Item with a Reaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaally Long Title"
+                Allowed="False" />
     </m:FoodSource.Foods>
 </m:FoodSource>
