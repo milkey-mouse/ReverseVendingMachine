@@ -428,12 +428,13 @@ namespace BorderLess
                 ItemCategory.Text = foodItem.Category;
                 if(foodItem.Allowed)
                 {
-                    AllowedLabel.Text = "Yes";
+                    ItemAllowed.Text = "Yes";
                 }
                 else
                 {
-                    AllowedLabel.Text = "No";
+                    ItemAllowed.Text = "No";
                 }
+                ItemManufacturer.Text = foodItem.Manufacturer;
                 BarcodeImage.Content = foodItem.UPC;
                 IngredientsView.ItemsSource = foodItem.IngredientsArray;
                 if(foodItem.Ingredients != "")
@@ -450,6 +451,8 @@ namespace BorderLess
                 ItemCount.Content = FoodsView.SelectedItems.Count + " items selected";
                 BarcodeImage.Content = "";
                 ItemCategory.Text = "";
+                ItemAllowed.Text = "";
+                ItemManufacturer.Text = "";
                 NoIngredientsGrid.Visibility = Visibility.Hidden;
                 IngredientsView.ItemsSource = null;
                 if(FoodsView.SelectedItems.Count == 0)
@@ -724,11 +727,6 @@ namespace BorderLess
                     }
                     else
                     {
-                        if (HasUIChecked == false)
-                        {
-                            //Console.WriteLine("Start:" + item.Name);
-                            //Console.WriteLine(FoodsView.Items.IndexOf(item));
-                        }
                         HasUIChecked = true;
                     }
                     DataTemplate dtx = listItem.ContentTemplate;
@@ -802,7 +800,7 @@ namespace BorderLess
                 if (rt.Angle == 0)
                 {
                     dc.Allowed = false;
-                    AllowedLabel.Text = "No";
+                    ItemAllowed.Text = "No";
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();
@@ -827,7 +825,7 @@ namespace BorderLess
                 else if (rt.Angle == -45)
                 {
                     dc.Allowed = true;
-                    AllowedLabel.Text = "Yes";
+                    ItemAllowed.Text = "Yes";
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();
