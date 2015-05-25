@@ -425,6 +425,15 @@ namespace BorderLess
                 ItemCount.Content = FoodsView.SelectedItems.Count + " item selected";
                 ClientApp.Model.Food foodItem = (ClientApp.Model.Food)FoodsView.SelectedItem;
                 ItemName.Text = foodItem.Name;
+                ItemCategory.Text = foodItem.Category;
+                if(foodItem.Allowed)
+                {
+                    AllowedLabel.Text = "Yes";
+                }
+                else
+                {
+                    AllowedLabel.Text = "No";
+                }
                 BarcodeImage.Content = foodItem.UPC;
                 IngredientsView.ItemsSource = foodItem.IngredientsArray;
                 if(foodItem.Ingredients != "")
@@ -440,6 +449,7 @@ namespace BorderLess
             {
                 ItemCount.Content = FoodsView.SelectedItems.Count + " items selected";
                 BarcodeImage.Content = "";
+                ItemCategory.Text = "";
                 NoIngredientsGrid.Visibility = Visibility.Hidden;
                 IngredientsView.ItemsSource = null;
                 if(FoodsView.SelectedItems.Count == 0)
@@ -643,6 +653,34 @@ namespace BorderLess
             UpdateSearch();
         }
 
+        public static T FindDescendant<T>(DependencyObject obj) where T : DependencyObject
+        {
+            if (obj == null) return default(T);
+            int numberChildren = VisualTreeHelper.GetChildrenCount(obj);
+            if (numberChildren == 0) return default(T);
+
+            for (int i = 0; i < numberChildren; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                if (child is T)
+                {
+                    return (T)(object)child;
+                }
+            }
+
+            for (int i = 0; i < numberChildren; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                var potentialMatch = FindDescendant<T>(child);
+                if (potentialMatch != default(T))
+                {
+                    return potentialMatch;
+                }
+            }
+
+            return default(T);
+        }
+
         private void ToggleAllowed(object sender, RoutedEventArgs e)
         {
             Button sb = sender as Button;
@@ -656,22 +694,27 @@ namespace BorderLess
             bool StopChecking = false;
             if (FoodsView.SelectedItems.Contains(dc) && FoodsView.SelectedItems.Count > 1)
             {
+                ScrollViewer s = FindDescendant<ScrollViewer>(FoodsView);
+                double lv = Math.Floor(s.VerticalOffset);
                 sp = sb.Parent as Grid;
                 srt = sp.RenderTransform as RotateTransform;
+                Console.WriteLine(lv);
                 foreach (Food item in FoodsView.SelectedItems)
                 {
                     //WPF is so intuitive, they said...
                     //Databinding is easy, they said...
                     ListBoxItem listItem = null;
-                    if (StopChecking == false)
+                    
+                    if (StopChecking == false && FoodsView.Items.IndexOf(item) >= lv)
                     {
                         listItem = this.FoodsView.ItemContainerGenerator.ContainerFromIndex(FoodsView.Items.IndexOf(item)) as ListBoxItem;
                     }
                     if (listItem == null) //the item is offscreen
                     {
-                        if(HasUIChecked == true)
+                        if(HasUIChecked == true && StopChecking == false)
                         {
                             StopChecking = true;
+                            Console.WriteLine("End:" + item.Name);
                         }
                         if (srt.Angle == 0)
                         {
@@ -683,7 +726,15 @@ namespace BorderLess
                         }
                         continue;
                     }
-                    HasUIChecked = true;
+                    else
+                    {
+                        if (HasUIChecked == false)
+                        {
+                            Console.WriteLine("Start:" + item.Name);
+                            Console.WriteLine(FoodsView.Items.IndexOf(item));
+                        }
+                        HasUIChecked = true;
+                    }
                     DataTemplate dtx = listItem.ContentTemplate;
                     Border bx = VisualTreeHelper.GetChild(listItem, 0) as Border;
                     ContentPresenter cpx = bx.Child as ContentPresenter;
@@ -743,6 +794,7 @@ namespace BorderLess
                         rt.BeginAnimation(RotateTransform.AngleProperty, rta);
                     }
                 }
+                DelayCall(500, FoodsView.Items.Refresh);
             }
             else
             {
@@ -754,6 +806,7 @@ namespace BorderLess
                 if (rt.Angle == 0)
                 {
                     dc.Allowed = false;
+                    AllowedLabel.Text = "No";
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();
@@ -778,6 +831,7 @@ namespace BorderLess
                 else if (rt.Angle == -45)
                 {
                     dc.Allowed = true;
+                    AllowedLabel.Text = "Yes";
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();

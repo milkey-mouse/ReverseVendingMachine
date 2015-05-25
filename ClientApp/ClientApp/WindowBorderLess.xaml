@@ -97,7 +97,11 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TextBlock x:Name="BarcodeLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Barcode" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,457,0,106" FontSize="18" IsHyphenationEnabled="True"/>
+            <TextBlock x:Name="BarcodeLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Barcode" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,457,0,106" FontSize="18"/>
+            <TextBlock x:Name="CategoryLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Category" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,72,0,491" FontSize="18"/>
+            <TextBlock x:Name="ItemCategory" TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" FontFamily="Segoe UI" Margin="10,101,10,464" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis"/>
+            <TextBlock x:Name="AllowedLabel" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Exchange Allowed" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="10,125,0,438" FontSize="18"/>
+            <TextBlock x:Name="ItemAllowed" TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" FontFamily="Segoe UI" Margin="10,154,10,0" FontSize="14" VerticalAlignment="Top" TextTrimming="CharacterEllipsis"/>
         </Grid>
         <TextBox x:Name="SearchBox" HorizontalAlignment="Left" Height="21" TextWrapping="Wrap" VerticalAlignment="Center" Width="213" Margin="965,15,0,546" SelectionBrush="#FF69FF92" FontSize="14" TextChanged="SearchUpdate"/>
         <Label x:Name="SearchLabel" Content="Search" HorizontalAlignment="Left" Margin="965,15,0,0" VerticalAlignment="Top" Height="23" FontStyle="Italic" Foreground="#FF7F7F7F" MouseDown="SearchLabelMouseDown" StylusDown="SearchLabel_StylusDown" TouchDown="SearchLabel_TouchDown"/>
