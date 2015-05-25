@@ -698,13 +698,16 @@ namespace BorderLess
                 double lv = Math.Floor(s.VerticalOffset);
                 sp = sb.Parent as Grid;
                 srt = sp.RenderTransform as RotateTransform;
-                Console.WriteLine(lv);
+                bool srta = false;
+                if (srt.Angle == -45)
+                {
+                    srta = true;
+                }
                 foreach (Food item in FoodsView.SelectedItems)
                 {
                     //WPF is so intuitive, they said...
                     //Databinding is easy, they said...
                     ListBoxItem listItem = null;
-                    
                     if (StopChecking == false && FoodsView.Items.IndexOf(item) >= lv)
                     {
                         listItem = this.FoodsView.ItemContainerGenerator.ContainerFromIndex(FoodsView.Items.IndexOf(item)) as ListBoxItem;
@@ -714,24 +717,17 @@ namespace BorderLess
                         if(HasUIChecked == true && StopChecking == false)
                         {
                             StopChecking = true;
-                            Console.WriteLine("End:" + item.Name);
+                            //Console.WriteLine("End:" + item.Name);
                         }
-                        if (srt.Angle == 0)
-                        {
-                            item.Allowed = false;
-                        }
-                        else if (srt.Angle == -45)
-                        {
-                            item.Allowed = true;
-                        }
+                        item.Allowed = srta;
                         continue;
                     }
                     else
                     {
                         if (HasUIChecked == false)
                         {
-                            Console.WriteLine("Start:" + item.Name);
-                            Console.WriteLine(FoodsView.Items.IndexOf(item));
+                            //Console.WriteLine("Start:" + item.Name);
+                            //Console.WriteLine(FoodsView.Items.IndexOf(item));
                         }
                         HasUIChecked = true;
                     }
