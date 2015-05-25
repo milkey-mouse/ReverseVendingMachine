@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Xml;
 
 namespace BorderLess
 {
@@ -640,6 +641,165 @@ namespace BorderLess
             }
             Reindex();
             UpdateSearch();
+        }
+
+        private void ToggleAllowed(object sender, RoutedEventArgs e)
+        {
+            Button sb = sender as Button;
+            Food dc = sb.DataContext as Food;
+            Grid sp = null;
+            Image gi = null;
+            Image ri = null;
+            RotateTransform rt = null;
+            RotateTransform srt = null;
+            bool HasUIChecked = false;
+            bool StopChecking = false;
+            if (FoodsView.SelectedItems.Contains(dc) && FoodsView.SelectedItems.Count > 1)
+            {
+                sp = sb.Parent as Grid;
+                srt = sp.RenderTransform as RotateTransform;
+                foreach (Food item in FoodsView.SelectedItems)
+                {
+                    //WPF is so intuitive, they said...
+                    //Databinding is easy, they said...
+                    ListBoxItem listItem = null;
+                    if (StopChecking == false)
+                    {
+                        listItem = this.FoodsView.ItemContainerGenerator.ContainerFromIndex(FoodsView.Items.IndexOf(item)) as ListBoxItem;
+                    }
+                    if (listItem == null) //the item is offscreen
+                    {
+                        if(HasUIChecked == true)
+                        {
+                            StopChecking = true;
+                        }
+                        if (srt.Angle == 0)
+                        {
+                            item.Allowed = false;
+                        }
+                        else if (srt.Angle == -45)
+                        {
+                            item.Allowed = true;
+                        }
+                        continue;
+                    }
+                    HasUIChecked = true;
+                    DataTemplate dtx = listItem.ContentTemplate;
+                    Border bx = VisualTreeHelper.GetChild(listItem, 0) as Border;
+                    ContentPresenter cpx = bx.Child as ContentPresenter;
+                    StackPanel spx = dtx.FindName("spOuterPanel", cpx) as StackPanel;
+                    Grid grx = spx.FindName("CheckGrid") as Grid;
+                    sp = grx;
+                    gi = sp.Children[0] as Image;
+                    ri = sp.Children[1] as Image;
+                    rt = sp.RenderTransform as RotateTransform;
+                    dc = sp.DataContext as Food;
+                    if (srt.Angle == 0)
+                    {
+                        dc.Allowed = false;
+                        PowerEase pe = new PowerEase();
+                        pe.Power = 2.5;
+                        DoubleAnimation gio = new DoubleAnimation();
+                        gio.EasingFunction = pe;
+                        gio.From = gi.Opacity;
+                        gio.To = 0;
+                        gio.Duration = AnimationDuration;
+                        DoubleAnimation rio = new DoubleAnimation();
+                        rio.EasingFunction = pe;
+                        rio.From = ri.Opacity;
+                        rio.To = 1;
+                        rio.Duration = AnimationDuration;
+                        DoubleAnimation rta = new DoubleAnimation();
+                        rta.EasingFunction = pe;
+                        rta.From = rt.Angle;
+                        rta.To = -45;
+                        rta.Duration = AnimationDuration;
+                        gi.BeginAnimation(OpacityProperty, gio);
+                        ri.BeginAnimation(OpacityProperty, rio);
+                        rt.BeginAnimation(RotateTransform.AngleProperty, rta);
+                    }
+                    else if (srt.Angle == -45)
+                    {
+                        dc.Allowed = true;
+                        PowerEase pe = new PowerEase();
+                        pe.Power = 2.5;
+                        DoubleAnimation gio = new DoubleAnimation();
+                        gio.EasingFunction = pe;
+                        gio.From = gi.Opacity;
+                        gio.To = 1;
+                        gio.Duration = AnimationDuration;
+                        DoubleAnimation rio = new DoubleAnimation();
+                        rio.EasingFunction = pe;
+                        rio.From = ri.Opacity;
+                        rio.To = 0;
+                        rio.Duration = AnimationDuration;
+                        DoubleAnimation rta = new DoubleAnimation();
+                        rta.EasingFunction = pe;
+                        rta.From = rt.Angle;
+                        rta.To = 0;
+                        rta.Duration = AnimationDuration;
+                        gi.BeginAnimation(OpacityProperty, gio);
+                        ri.BeginAnimation(OpacityProperty, rio);
+                        rt.BeginAnimation(RotateTransform.AngleProperty, rta);
+                    }
+                }
+            }
+            else
+            {
+                sp = sb.Parent as Grid;
+                gi = sp.Children[0] as Image;
+                ri = sp.Children[1] as Image;
+                rt = sp.RenderTransform as RotateTransform;
+                dc = sb.DataContext as Food;
+                if (rt.Angle == 0)
+                {
+                    dc.Allowed = false;
+                    PowerEase pe = new PowerEase();
+                    pe.Power = 2.5;
+                    DoubleAnimation gio = new DoubleAnimation();
+                    gio.EasingFunction = pe;
+                    gio.From = gi.Opacity;
+                    gio.To = 0;
+                    gio.Duration = AnimationDuration;
+                    DoubleAnimation rio = new DoubleAnimation();
+                    rio.EasingFunction = pe;
+                    rio.From = ri.Opacity;
+                    rio.To = 1;
+                    rio.Duration = AnimationDuration;
+                    DoubleAnimation rta = new DoubleAnimation();
+                    rta.EasingFunction = pe;
+                    rta.From = rt.Angle;
+                    rta.To = -45;
+                    rta.Duration = AnimationDuration;
+                    gi.BeginAnimation(OpacityProperty, gio);
+                    ri.BeginAnimation(OpacityProperty, rio);
+                    rt.BeginAnimation(RotateTransform.AngleProperty, rta);
+                }
+                else if (rt.Angle == -45)
+                {
+                    dc.Allowed = true;
+                    PowerEase pe = new PowerEase();
+                    pe.Power = 2.5;
+                    DoubleAnimation gio = new DoubleAnimation();
+                    gio.EasingFunction = pe;
+                    gio.From = gi.Opacity;
+                    gio.To = 1;
+                    gio.Duration = AnimationDuration;
+                    DoubleAnimation rio = new DoubleAnimation();
+                    rio.EasingFunction = pe;
+                    rio.From = ri.Opacity;
+                    rio.To = 0;
+                    rio.Duration = AnimationDuration;
+                    DoubleAnimation rta = new DoubleAnimation();
+                    rta.EasingFunction = pe;
+                    rta.From = rt.Angle;
+                    rta.To = 0;
+                    rta.Duration = AnimationDuration;
+                    gi.BeginAnimation(OpacityProperty, gio);
+                    ri.BeginAnimation(OpacityProperty, rio);
+                    rt.BeginAnimation(RotateTransform.AngleProperty, rta);
+                }
+            }
         }
     }
 }

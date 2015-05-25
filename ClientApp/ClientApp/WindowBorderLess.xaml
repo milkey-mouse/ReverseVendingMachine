@@ -78,21 +78,20 @@
             <ListBox x:Name="FoodsView" ItemsSource="{Binding Foods}" HorizontalAlignment="Left" Height="586" Margin="266,0,-700,-9.334" VerticalAlignment="Top" Width="700" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" BorderBrush="{x:Null}" SelectionMode="Extended" SelectionChanged="FoodsView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel x:Name="spOuterPanel" Orientation="Horizontal">
                             <Viewbox Height="45" Width="636" StretchDirection="DownOnly" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,-5,0">
                                 <StackPanel Margin="-1,-1,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
                                     <Label Content="{Binding Category}" Foreground="Gray" FontSize="16" HorizontalAlignment="Left" Margin="0,6" VerticalAlignment="Center" />
                                     <Label Content="{Binding Name}" Foreground="Black" FontSize="16" HorizontalAlignment="Left" Margin="-10,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Viewbox>
-                            <Grid Height="32" Width="32" Margin="2,0,0,0" RenderTransformOrigin="0.515,0.515">
+                            <Grid x:Name="CheckGrid" Height="32" Width="32" Margin="2,0,0,0" RenderTransformOrigin="0.515,0.515">
                                 <Grid.RenderTransform>
-                                    <TransformGroup>
-                                        <RotateTransform Angle="{Binding Allowed, Converter={StaticResource PlusVisibliltyConverter}, Mode=OneTime}"/>
-                                    </TransformGroup>
+                                    <RotateTransform Angle="{Binding Allowed, Converter={StaticResource PlusVisibliltyConverter}, Mode=OneWay}"/>
                                 </Grid.RenderTransform>
-                                <Image Source="Green_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource NegateColorConverter}, Mode=OneTime}"/>
-                                <Image Source="Red_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource PlusColorConverter}, Mode=OneTime}"/>
+                                <Image Source="Green_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource NegateColorConverter}, Mode=OneWay}"/>
+                                <Image Source="Red_Plus-32.png" Stretch="Fill" Width="32" Height="32" Margin="-1,-1,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="{Binding Allowed, Converter={StaticResource PlusColorConverter}, Mode=OneWay}"/>
+                                <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="ToggleAllowed" Style="{StaticResource NoChromeButton}" Background="#00000000"/>
                             </Grid>
                         </StackPanel>
                     </DataTemplate>
@@ -126,11 +125,11 @@
             <Button x:Name="DeleteNoIngredients" Content="Hide Items" Height="20" VerticalAlignment="Bottom" Margin="50,0,50,60" Click="ToggleHideIngredients"/>
         </Grid>
         <Separator HorizontalAlignment="Left" Height="3" Margin="965,179,0,0" VerticalAlignment="Top" Width="213"/>
-        <Button x:Name="InfoButton" HorizontalAlignment="Left"  Style="{DynamicResource NoChromeButton}" Margin="1161,43,0,0" VerticalAlignment="Top" Width="17" Height="17" Click="InfoButton_Click">
+        <Button x:Name="InfoButton" HorizontalAlignment="Left"  Style="{StaticResource NoChromeButton}" Margin="1161,43,0,0" VerticalAlignment="Top" Width="17" Height="17" Click="InfoButton_Click">
             <Image Source="Info-17.png" Stretch="Fill"/>
         </Button>
         <TextBlock x:Name="IngredientsLabel" TextWrapping="Wrap" HorizontalAlignment="Left" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" FontFamily="Segoe UI Light" Margin="965,187,0,372" FontSize="18" IsHyphenationEnabled="True" Height="24"><Run Text="Ingredients"/><LineBreak/><Run/></TextBlock>
-        <Button x:Name="FoodsCheck" Style="{DynamicResource NoChromeButton}" Margin="1150,185,11,0" VerticalAlignment="Top" Height="27" Width="27" Click="ToggleHideIngredients" ToolTip="Hide Items with No Ingredient Data">
+        <Button x:Name="FoodsCheck" Style="{StaticResource NoChromeButton}" Margin="1150,185,11,0" VerticalAlignment="Top" Height="27" Width="27" Click="ToggleHideIngredients" ToolTip="Hide Items with No Ingredient Data">
             <Image x:Name="FoodsCheckPic" Source="No_Ingredients-27.png" Stretch="Fill"/>
         </Button>
         <Grid x:Name="BarcodeSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" Visibility="Hidden" MouseUp="EmbiggenBarcode_Up"/>
@@ -142,7 +141,7 @@
         </Grid>
         <Grid x:Name="HelpSplash" Background="#00000000" d:IsHidden="True" Width="1200" Margin="-6,3,-5,-5" Visibility="Hidden" MouseUp="HelpDialogClose_Click"/>
         <Grid x:Name="HelpDialog" HorizontalAlignment="Left" Height="300" Margin="350,-500,0,163" VerticalAlignment="Top" Width="500" Background="White">
-            <Button x:Name="HelpDialogClose" Style="{DynamicResource NoChromeButton}" Margin="480,5,5,0" VerticalAlignment="Top" Height="15" Click="HelpDialogClose_Click">
+            <Button x:Name="HelpDialogClose" Style="{StaticResource NoChromeButton}" Margin="480,5,5,0" VerticalAlignment="Top" Height="15" Click="HelpDialogClose_Click">
                 <Image Source="DialogClose-24.png" Stretch="Fill"/>
             </Button>
             <Label Content="Search Operators" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semibold"/>

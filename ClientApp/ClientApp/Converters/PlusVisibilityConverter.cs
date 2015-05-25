@@ -15,7 +15,7 @@ namespace ClientApp
             }
             else
             {
-                return 45;
+                return -45;
             }
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
