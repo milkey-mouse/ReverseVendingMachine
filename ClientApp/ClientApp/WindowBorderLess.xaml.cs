@@ -800,7 +800,10 @@ namespace BorderLess
                 if (rt.Angle == 0)
                 {
                     dc.Allowed = false;
-                    ItemAllowed.Text = "No";
+                    if (FoodsView.SelectedItems.Contains(dc))
+                    {
+                        ItemAllowed.Text = "No";
+                    }
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();
@@ -825,7 +828,10 @@ namespace BorderLess
                 else if (rt.Angle == -45)
                 {
                     dc.Allowed = true;
-                    ItemAllowed.Text = "Yes";
+                    if (FoodsView.SelectedItems.Contains(dc))
+                    {
+                        ItemAllowed.Text = "Yes";
+                    }
                     PowerEase pe = new PowerEase();
                     pe.Power = 2.5;
                     DoubleAnimation gio = new DoubleAnimation();
