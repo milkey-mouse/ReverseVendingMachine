@@ -163,14 +163,16 @@
             <TextBlock HorizontalAlignment="Left" Margin="331,100,0,0" TextWrapping="Wrap" Text="The OR Operator is the default used while searching. It matches anything containing any of the words searched for and sorts by relevance." VerticalAlignment="Top" Height="100" Width="148" FontSize="11"/>
             <Label Content="Credits" HorizontalAlignment="Left" Margin="10,204,0,0" VerticalAlignment="Top" FontSize="16" FontFamily="Segoe UI Semibold"/>
             <Separator HorizontalAlignment="Left" Height="5" Margin="17,234,0,0" VerticalAlignment="Top" Width="470"/>
-            <Label Content="Project by Milkey Mouse" HorizontalAlignment="Left" Margin="64,244,0,0" VerticalAlignment="Top"/>
-            <Label Content="for the Hackaday Prize" HorizontalAlignment="Left" Margin="70,268,0,0" VerticalAlignment="Top"/>
+            <Label Content="Project by Milkey Mouse" HorizontalAlignment="Left" Margin="64,236,0,0" VerticalAlignment="Top"/>
+            <Label Content="for the Hackaday Prize" HorizontalAlignment="Left" Margin="70,247,0,0" VerticalAlignment="Top"/>
             <Label Content="Icons by Icons8" HorizontalAlignment="Left" Margin="293,240,0,0" VerticalAlignment="Top"/>
             <Label Content="UPC data from" HorizontalAlignment="Left" Margin="298,260,0,0" VerticalAlignment="Top" FontSize="11"/>
             <Image Margin="17,246,439,10" Source="Milkey.png" Stretch="UniformToFill"/>
             <Image Margin="217,246,239,10" Source="logonaut.png" Stretch="UniformToFill"/>
             <Image Margin="420,246,36,10" Source="Icons8_Cup-100.png" Stretch="UniformToFill"/>
             <Label Content="UPC Food Search" HorizontalAlignment="Left" Margin="293,273,0,0" VerticalAlignment="Top" FontSize="11"/>
+            <Label Content="Price data from Kroger," HorizontalAlignment="Left" Margin="70,266,0,0" VerticalAlignment="Top"/>
+            <Label Content="QFC, Target, and Walmart" HorizontalAlignment="Left" Margin="63,277,0,-3" VerticalAlignment="Top"/>
         </Grid>
     </Grid>
 </Window>
